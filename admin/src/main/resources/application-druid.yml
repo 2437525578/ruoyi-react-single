@@ -6,7 +6,7 @@ spring:
         druid:
             # 主库数据源
             master:
-                url: jdbc:mysql://localhost:3306/ry-react?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+                url: jdbc:mysql://localhost:3307/ry-react?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
                 username: root
                 password: 666666
             # 从库数据源
@@ -59,3 +59,11 @@ spring:
                 wall:
                     config:
                         multi-statement-allow: true
+
+
+# ========= 开启 Knife4j 接口文档（doc.html）=========
+knife4j:
+  enable: true          # 开启 Knife4j
+  production: false     # 开发环境必须 false（上线要改成 true 隐藏文档）
+  basic:
+    enable: false       # 不开 Basic 认证
