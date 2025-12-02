@@ -150,6 +150,7 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
   };
 };
 
+// @ts-ignore
 export async function onRouteChange({clientRoutes, location}) {
   const menus = getRemoteMenu();
   // console.log('onRouteChange', clientRoutes, location, menus);
@@ -164,6 +165,7 @@ export async function onRouteChange({clientRoutes, location}) {
 // }
 
 
+// @ts-ignore
 export async function patchClientRoutes({routes}) {
   // console.log('patchClientRoutes', routes);
   patchRouteWithRemoteMenus(routes);

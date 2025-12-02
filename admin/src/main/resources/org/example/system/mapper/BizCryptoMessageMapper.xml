@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.system.mapper.BizCryptoMessageMapper">
+
+    <resultMap type="BizCryptoMessage" id="BizCryptoMessageResult">
+        <result property="id"    column="id"    />
+        <result property="originId"    column="origin_id"    />
+        <result property="coin"    column="coin"    />
+        <result property="content"    column="content"    />
+        <result property="sentiment"    column="sentiment"    />
+        <result property="impactScore"    column="impact_score"    />
+        <result property="source"    column="source"    />
+        <result property="publishTime"    column="publish_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectBizCryptoMessageVo">
+        select id, origin_id, coin, content, sentiment, impact_score, source, publish_time, create_by, create_time, update_by, update_time from biz_crypto_message
+    </sql>
+
+    <select id="selectBizCryptoMessageList" parameterType="BizCryptoMessage" resultMap="BizCryptoMessageResult">
+        <include refid="selectBizCryptoMessageVo"/>
+        <where>
+            <if test="coin != null  and coin != ''"> and coin = #{coin}</if>
+            <if test="sentiment != null  and sentiment != ''"> and sentiment = #{sentiment}</if>
+        </where>
+    </select>
+
+    <select id="selectBizCryptoMessageById" parameterType="Long" resultMap="BizCryptoMessageResult">
+        <include refid="selectBizCryptoMessageVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBizCryptoMessage" parameterType="BizCryptoMessage" useGeneratedKeys="true" keyProperty="id">
+        insert into biz_crypto_message
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="originId != null">origin_id,</if>
+            <if test="coin != null">coin,</if>
+            <if test="content != null">content,</if>
+            <if test="sentiment != null">sentiment,</if>
+            <if test="impactScore != null">impact_score,</if>
+            <if test="source != null">source,</if>
+            <if test="publishTime != null">publish_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="originId != null">#{originId},</if>
+            <if test="coin != null">#{coin},</if>
+            <if test="content != null">#{content},</if>
+            <if test="sentiment != null">#{sentiment},</if>
+            <if test="impactScore != null">#{impactScore},</if>
+            <if test="source != null">#{source},</if>
+            <if test="publishTime != null">#{publishTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBizCryptoMessage" parameterType="BizCryptoMessage">
+        update biz_crypto_message
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="originId != null">origin_id = #{originId},</if>
+            <if test="coin != null">coin = #{coin},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="sentiment != null">sentiment = #{sentiment},</if>
+            <if test="impactScore != null">impact_score = #{impactScore},</if>
+            <if test="source != null">source = #{source},</if>
+            <if test="publishTime != null">publish_time = #{publishTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizCryptoMessageById" parameterType="Long">
+        delete from biz_crypto_message where id = #{id}
+    </delete>
+
+    <delete id="deleteBizCryptoMessageByIds" parameterType="String">
+        delete from biz_crypto_message where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

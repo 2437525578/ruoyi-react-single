@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.system.mapper.BizInvestmentReportMapper">
+
+    <resultMap type="BizInvestmentReport" id="BizInvestmentReportResult">
+        <result property="id"    column="id"    />
+        <result property="messageId"    column="message_id"    />
+        <result property="analysisResult"    column="analysis_result"    />
+        <result property="adviceContent"    column="advice_content"    />
+        <result property="status"    column="status"    />
+        <result property="auditBy"    column="audit_by"    />
+        <result property="auditTime"    column="audit_time"    />
+        <result property="rejectReason"    column="reject_reason"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectBizInvestmentReportVo">
+        select id, message_id, analysis_result, advice_content, status, audit_by, audit_time, reject_reason, create_by, create_time, update_by, update_time from biz_investment_report
+    </sql>
+
+    <select id="selectBizInvestmentReportList" parameterType="BizInvestmentReport" resultMap="BizInvestmentReportResult">
+        <include refid="selectBizInvestmentReportVo"/>
+        <where>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+
+    <select id="selectBizInvestmentReportById" parameterType="Long" resultMap="BizInvestmentReportResult">
+        <include refid="selectBizInvestmentReportVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBizInvestmentReport" parameterType="BizInvestmentReport" useGeneratedKeys="true" keyProperty="id">
+        insert into biz_investment_report
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="messageId != null">message_id,</if>
+            <if test="analysisResult != null">analysis_result,</if>
+            <if test="adviceContent != null">advice_content,</if>
+            <if test="status != null">status,</if>
+            <if test="auditBy != null">audit_by,</if>
+            <if test="auditTime != null">audit_time,</if>
+            <if test="rejectReason != null">reject_reason,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="messageId != null">#{messageId},</if>
+            <if test="analysisResult != null">#{analysisResult},</if>
+            <if test="adviceContent != null">#{adviceContent},</if>
+            <if test="status != null">#{status},</if>
+            <if test="auditBy != null">#{auditBy},</if>
+            <if test="auditTime != null">#{auditTime},</if>
+            <if test="rejectReason != null">#{rejectReason},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBizInvestmentReport" parameterType="BizInvestmentReport">
+        update biz_investment_report
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="messageId != null">message_id = #{messageId},</if>
+            <if test="analysisResult != null">analysis_result = #{analysisResult},</if>
+            <if test="adviceContent != null">advice_content = #{adviceContent},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="auditBy != null">audit_by = #{auditBy},</if>
+            <if test="auditTime != null">audit_time = #{auditTime},</if>
+            <if test="rejectReason != null">reject_reason = #{rejectReason},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizInvestmentReportById" parameterType="Long">
+        delete from biz_investment_report where id = #{id}
+    </delete>
+
+    <delete id="deleteBizInvestmentReportByIds" parameterType="String">
+        delete from biz_investment_report where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

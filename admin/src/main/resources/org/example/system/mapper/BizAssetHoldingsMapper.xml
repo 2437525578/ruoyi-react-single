@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.system.mapper.BizAssetHoldingsMapper">
+
+    <resultMap type="BizAssetHoldings" id="BizAssetHoldingsResult">
+        <result property="id"    column="id"    />
+        <result property="coin"    column="coin"    />
+        <result property="amount"    column="amount"    />
+        <result property="usdtValue"    column="usdt_value"    />
+        <result property="costPrice"    column="cost_price"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectBizAssetHoldingsVo">
+        select id, coin, amount, usdt_value, cost_price, create_by, create_time, update_by, update_time from biz_asset_holdings
+    </sql>
+
+    <select id="selectBizAssetHoldingsList" parameterType="BizAssetHoldings" resultMap="BizAssetHoldingsResult">
+        <include refid="selectBizAssetHoldingsVo"/>
+        <where>
+            <if test="coin != null  and coin != ''"> and coin = #{coin}</if>
+        </where>
+    </select>
+
+    <select id="selectBizAssetHoldingsById" parameterType="Long" resultMap="BizAssetHoldingsResult">
+        <include refid="selectBizAssetHoldingsVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBizAssetHoldings" parameterType="BizAssetHoldings" useGeneratedKeys="true" keyProperty="id">
+        insert into biz_asset_holdings
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="coin != null and coin != ''">coin,</if>
+            <if test="amount != null">amount,</if>
+            <if test="usdtValue != null">usdt_value,</if>
+            <if test="costPrice != null">cost_price,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="coin != null and coin != ''">#{coin},</if>
+            <if test="amount != null">#{amount},</if>
+            <if test="usdtValue != null">#{usdtValue},</if>
+            <if test="costPrice != null">#{costPrice},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBizAssetHoldings" parameterType="BizAssetHoldings">
+        update biz_asset_holdings
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="coin != null and coin != ''">coin = #{coin},</if>
+            <if test="amount != null">amount = #{amount},</if>
+            <if test="usdtValue != null">usdt_value = #{usdtValue},</if>
+            <if test="costPrice != null">cost_price = #{costPrice},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizAssetHoldingsById" parameterType="Long">
+        delete from biz_asset_holdings where id = #{id}
+    </delete>
+
+    <delete id="deleteBizAssetHoldingsByIds" parameterType="String">
+        delete from biz_asset_holdings where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

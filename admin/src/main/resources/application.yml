@@ -34,9 +34,9 @@ server:
 # 日志配置
 logging:
   level:
-    org.org.example: debug
+    org.example: info
     org.springframework: warn
-    root: debug
+    root: info
 
 # 用户配置
 user:
@@ -132,3 +132,10 @@ file:
   prefix: test
   domain: localhost
   path: D:\test
+
+# Dify AI 配置
+dify:
+  api:
+    # 替换为你自己在 Dify 平台创建的应用 Key (类型选 聊天助手)
+    key: "app-xxxxxxxxxxxxxxxxxxxx"
+    url: "https://api.dify.ai/v1"

@@ -15,11 +15,7 @@ export default [
     path: '/',
     redirect: '/account/center',
   },
-  {
-    path: '*',
-    layout: false,
-    component: './404',
-  },
+
   {
     path: '/user',
     layout: false,
@@ -88,5 +84,32 @@ export default [
         component: './Tool/Gen/edit',
       },
     ]
+  },
+  {
+    path: '*',
+    layout: false,
+    component: './404',
+  },
+  {
+    path: '/crypto',
+    name: '数字货币系统',
+    icon: 'fund',
+    routes: [
+      {
+        path: '/crypto/holdings',
+        name: '持仓管理',
+        component: './Crypto/Holdings',
+      },
+      {
+        path: '/crypto/message',
+        name: '市场消息',
+        component: './Crypto/Message',
+      },
+      {
+        path: '/crypto/report',
+        name: '投资建议',
+        component: './Crypto/Report',
+      },
+    ],
   },
 ];
