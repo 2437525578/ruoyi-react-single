@@ -1,46 +1,122 @@
-## 平台简介
+配置调整：
+在 RuoYiApplication.java 中添加了 @EnableScheduling 注解，开启了定时任务支持。
 
-基于ruoyi vue和Ruoyi-React实现的快速开发工具。
+修改 application.yml，将日志级别从 debug 调整为 info 以减少控制台噪音。
 
-**前端：基于ant-design-pro**
-**后端：单体springboot项目(非cloud)+mysql+redis**
-**功能：生成前端react代码+后端springboot代码**
+在 application.yml 中新增了 dify.api 配置块（Key 和 URL）。
 
+1.2 业务模块实现 (src/org.example.org.example、src/org/example/system/mapper、src/org/example/system/service)
+我们实现了三个核心业务模块：
 
-若依(Ruoyi-React)是一套全部开源的快速开发平台，毫无保留给个人及企业免费使用。
+持仓管理 (Holdings)
 
-* 前端采用React 18、Ant Design Pro 6、TypeScript 5。
-* 后端采用Spring Boot、Spring Security、Redis & Jwt。
-* 权限认证使用Jwt，支持多终端认证系统。
-* 支持加载动态权限菜单，多方式轻松权限控制。
-* 高效率开发，使用代码生成器可以一键生成前后端代码。
+Domain: BizAssetHoldings - 记录币种、数量、估值、成本等。
 
+Controller/Service/Mapper: 实现了标准的 CRUD 接口，供前端管理持仓数据，并提供给 AI 作为分析上下文。
 
-## 内置功能
+市场消息 (Message)
 
-1. 生成前端react代码+后端springboot代码
+Domain: BizCryptoMessage - 记录消息内容、情感倾向（利好/利空）、来源等。
 
-   
-## 前端开发注意事项
+核心逻辑 (BizCryptoMessageServiceImpl):
 
-Node：建议v16或以上
+实现了 autoCollectNews() 定时任务（每天早8点）。
 
-安装依赖请支行：pnpm i
+集成 DifyUtils 调用 AI 搜集新闻。
 
-正常启动请运行: pnpm run dev
+业务闭环：在新闻入库后，自动调用 reportService.generateReport() 触发分析。
 
-Mock测试模式请运行: npm run start
+投资建议 (Report)
 
-发布打包请运行: npm run build
+Domain: BizInvestmentReport - 记录 AI 分析结果、建议内容、审核状态（待审核/已通过/已驳回）。
 
-## 相关技术文档
+核心逻辑 (BizInvestmentReportServiceImpl):
 
-### 后端说明文档
+实现了 generateReport(messageId)：查询当前持仓 -> 结合新闻构建 Prompt -> 调用 AI 生成建议 -> 存入数据库。
 
+实现了 updateBizInvestmentReport：在审核状态更为“已通过”时，触发模拟的自动调仓逻辑 (executeAutoTrade)。
 
-## 部署
+1.3 工具类封装(src/org/example/system/utils)
+DifyUtils: 封装了向 Dify 平台发送 HTTP 请求的通用方法，处理 JSON 响应。
 
+二、 前端开发 (React)
+由于代码生成器生成的是 Vue 代码，我们手动重写了对应的 React 页面。
 
-## 演示图
+2.1 路由配置 (config/routes.ts)
+新增了 /crypto 路由组，包含三个子页面：
 
-![image-20240413163633488](readme.assets/image-20240413163633488.png)
+/crypto/holdings：持仓管理
+
+/crypto/message：市场消息
+
+/crypto/report：投资建议
+
+2.2 API 服务层 (services/crypto)
+typings.d.ts: 定义了 TypeScript 接口类型，确保前后端数据结构一致。
+
+api.ts: 封装了对应后端的 RESTful 请求（GET list, POST add, PUT update, DELETE remove）。
+
+2.3 页面组件 (pages/Crypto)
+Holdings/index.tsx (持仓管理)
+
+使用 ProTable 实现持仓列表。
+
+支持“可编辑行”模式，允许直接在表格中修改持仓数量。
+
+Message/index.tsx (市场消息)
+
+展示 AI 采集的新闻。
+
+使用 Tag 组件对情感倾向（利好/利空）进行颜色区分展示。
+
+Report/index.tsx (投资建议审核)
+
+展示待审核的 AI 建议报告。
+
+审核交互：实现了“通过”和“驳回”按钮。点击“驳回”会弹出 Modal 框输入驳回原因。
+
+三、 数据库变更
+3.1 业务表结构
+在 MySQL 中新建了三张表（包含 create_by, create_time 等标准字段）：
+
+biz_asset_holdings：存储持仓资产。
+
+biz_crypto_message：存储采集到的市场消息。
+
+biz_investment_report：存储分析报告及审核记录。
+
+3.2 菜单数据 (sys_menu)
+通过 SQL 脚本直接插入了菜单数据，解决了页面添加可能失败的问题：
+
+一级目录：数字货币系统 (ID: 2000)
+INSERT INTO sys_menu (menu_id, menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
+VALUES
+(2000, '数字货币系统', 0, 1, 'crypto', 'Layout', 1, 0, 'M', '0', '0', '', 'fund', 'admin', NOW(), '', NULL, '数字货币一级目录');
+子菜单：持仓管理 (2001)、市场消息 (2002)、投资建议 (2003)
+INSERT INTO sys_menu (menu_id, menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
+VALUES
+(2001, '持仓管理', 2000, 1, 'holdings', 'Crypto/Holdings/index', 1, 0, 'C', '0', '0', 'crypto:holdings:list', 'chart', 'admin', NOW(), '', NULL, '持仓管理页面');
+
+-- 3. 插入子菜单：市场消息
+INSERT INTO sys_menu (menu_id, menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
+VALUES
+(2002, '市场消息', 2000, 2, 'message', 'Crypto/Message/index', 1, 0, 'C', '0', '0', 'crypto:message:list', 'message', 'admin', NOW(), '', NULL, '市场消息页面');
+
+-- 4. 插入子菜单：投资建议
+INSERT INTO sys_menu (menu_id, menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)
+VALUES
+(2003, '投资建议', 2000, 3, 'report', 'Crypto/Report/index', 1, 0, 'C', '0', '0', 'crypto:report:list', 'read', 'admin', NOW(), '', NULL, '投资建议审核页面');
+四、 核心业务流程总结
+经过以上修改，系统已具备完整的自动化闭环：
+
+触发：Spring Scheduler 定时触发。
+
+采集：后端调用 Dify AI 联网搜索新闻，解析 JSON 并存入 biz_crypto_message。
+
+分析：新闻入库后，自动查询 biz_asset_holdings，将“新闻+持仓”发送给 AI 进行二次分析。
+
+生成：AI 返回具体的买卖建议，存入 biz_investment_report（状态：待审核）。
+
+审核：管理员在 React 前端看到报告，点击“通过”。
+
+执行：后端检测到审核通过，自动执行持仓更新逻辑（模拟交易）。
