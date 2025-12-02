@@ -1,3 +1,4 @@
+12.2.0 版本--秦家隆修改文档
 配置调整：
 在 RuoYiApplication.java 中添加了 @EnableScheduling 注解，开启了定时任务支持。
 
@@ -85,7 +86,7 @@ biz_crypto_message：存储采集到的市场消息。
 
 biz_investment_report：存储分析报告及审核记录。
 
-3.2 菜单数据 (sys_menu)
+3.2 菜单数据 (sys_menu)和货币数字系统页面 (biz_asset_holdings、biz_crypto_message、biz_investment_report存放于DOM下)
 通过 SQL 脚本直接插入了菜单数据，解决了页面添加可能失败的问题：
 
 一级目录：数字货币系统 (ID: 2000)
