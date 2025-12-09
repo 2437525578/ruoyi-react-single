@@ -19,11 +19,12 @@ const ReportTable: React.FC = () => {
 
   // 从location.state中获取messageId并设置筛选条件
   useEffect(() => {
-    if (location.state?.messageId) {
-      setMessageId(location.state.messageId);
+    if ((location.state as { messageId?: number })?.messageId) {
+      setMessageId((location.state as { messageId?: number }).messageId);
       // 如果表格已加载，执行筛选
       if (actionRef.current) {
-        actionRef.current.setFieldsValue({ messageId: location.state.messageId });
+        // 通过刷新表格触发搜索条件生效
+        actionRef.current?.reload();
       }
     }
   }, [location.state]);
@@ -31,9 +32,20 @@ const ReportTable: React.FC = () => {
   // 审核操作
   const handleAudit = async (id: number, status: string, reason: string = '') => {
     try {
-      await updateReport({ id, status, rejectReason: reason, auditBy: 'Admin' });
+      // 发送审核请求，使用Status: Approved格式
+      await updateReport({ 
+        id, 
+        status, 
+        rejectReason: reason, 
+        auditBy: 'Admin',
+        // 按照要求添加Status字段
+        Status: status === '1' ? 'Approved' : 'Rejected'
+      });
+      
       if (status === '1') {
         message.success('审核通过，自动调仓指令已触发');
+        // 审核通过后，提示用户持仓数据将更新
+        message.info('持仓数据正在更新，请刷新持仓页面查看最新分布');
       } else {
         message.success('操作成功');
       }
@@ -147,10 +159,12 @@ const ReportTable: React.FC = () => {
           // 如果有messageId，添加到请求参数中
           const requestParams = messageId ? { ...params, messageId } : params;
           const msg = await getReportList(requestParams);
+          const rows = Array.isArray(msg) ? msg : (msg as any).rows || [];
+          const total = Array.isArray(msg) ? msg.length : (msg as any).total || 0;
           return {
-            data: msg.rows,
+            data: rows,
             success: true,
-            total: msg.total,
+            total,
           };
         }}
         columns={columns}
@@ -209,3 +223,4 @@ const ReportTable: React.FC = () => {
 };
 
 export default ReportTable;
+
