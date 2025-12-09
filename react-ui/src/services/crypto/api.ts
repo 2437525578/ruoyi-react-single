@@ -62,6 +62,21 @@ export async function removeMessage(ids: string) {
   });
 }
 
+// 手动触发AI收集新闻
+export async function triggerCollectNews() {
+  return request('/api/crypto/message/collect', {
+    method: 'POST',
+  });
+}
+
+// 手动生成投资报告
+export async function generateReport(data: any) {
+  return request('/api/crypto/report/generate', {
+    method: 'POST',
+    data,
+  });
+}
+
 // ================= 投资报告 =================
 
 export async function getReportList(params?: any) {
