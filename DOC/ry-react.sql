@@ -356,6 +356,7 @@ INSERT INTO `sys_menu` VALUES (1, '系统管理', 0, 1, 'system', NULL, '', 1, 0
 INSERT INTO `sys_menu` VALUES (2, '系统监控', 0, 2, 'monitor', NULL, '', 1, 0, 'M', '0', '0', '', 'monitor', 'admin', '2024-04-12 22:06:26', '', NULL, '系统监控目录');
 INSERT INTO `sys_menu` VALUES (3, '系统工具', 0, 3, 'tool', NULL, '', 1, 0, 'M', '0', '0', '', 'tool', 'admin', '2024-04-12 22:06:26', '', NULL, '系统工具目录');
 INSERT INTO `sys_menu` VALUES (4, '若依官网', 0, 4, 'http://ruoyi.vip', NULL, '', 0, 0, 'M', '0', '0', '', 'guide', 'admin', '2024-04-12 22:06:26', '', NULL, '若依官网地址');
+INSERT INTO `sys_menu` VALUES(2000, '数字货币系统', 0, 1, 'crypto', 'Layout', 1, 0, 'M', '0', '0', '', 'fund', 'admin', NOW(), '', NULL, NULL, '数字货币系统菜单');
 INSERT INTO `sys_menu` VALUES (100, '用户管理', 1, 1, 'user', 'system/user/index', '', 1, 0, 'C', '0', '0', 'system:user:list', 'user', 'admin', '2024-04-12 22:06:26', '', NULL, '用户管理菜单');
 INSERT INTO `sys_menu` VALUES (101, '角色管理', 1, 2, 'role', 'system/role/index', '', 1, 0, 'C', '0', '0', 'system:role:list', 'peoples', 'admin', '2024-04-12 22:06:26', '', NULL, '角色管理菜单');
 INSERT INTO `sys_menu` VALUES (102, '菜单管理', 1, 3, 'menu', 'system/menu/index', '', 1, 0, 'C', '0', '0', 'system:menu:list', 'tree-table', 'admin', '2024-04-12 22:06:26', '', NULL, '菜单管理菜单');
@@ -437,6 +438,9 @@ INSERT INTO `sys_menu` VALUES (1057, '生成删除', 116, 3, '#', '', '', 1, 0, 
 INSERT INTO `sys_menu` VALUES (1058, '导入代码', 116, 4, '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:import', '#', 'admin', '2024-04-12 22:06:26', '', NULL, '');
 INSERT INTO `sys_menu` VALUES (1059, '预览代码', 116, 5, '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:preview', '#', 'admin', '2024-04-12 22:06:26', '', NULL, '');
 INSERT INTO `sys_menu` VALUES (1060, '生成代码', 116, 6, '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:code', '#', 'admin', '2024-04-12 22:06:26', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (2001, '持仓管理', 2000, 1, 'holdings', 'Crypto/Holdings/index', 1, 0, 'C', '0', '0', 'crypto:holdings:list', 'chart', 'admin', NOW(), '', NULL, NULL,'持仓管理页面');
+INSERT INTO `sys_menu` VALUES (2002, '市场消息', 2000, 2, 'message', 'Crypto/Message/index', 1, 0, 'C', '0', '0', 'crypto:message:list', 'message', 'admin', NOW(), '', NULL,NULL, '市场消息页面');
+INSERT INTO `sys_menu` VALUES (2003, '投资建议', 2000, 3, 'report', 'Crypto/Report/index', 1, 0, 'C', '0', '0', 'crypto:report:list', 'read', 'admin', NOW(), '', NULL,NULL, '投资建议审核页面');
 
 -- ----------------------------
 -- Table structure for sys_notice
@@ -663,7 +667,10 @@ INSERT INTO `sys_role_menu` VALUES (2, 1057);
 INSERT INTO `sys_role_menu` VALUES (2, 1058);
 INSERT INTO `sys_role_menu` VALUES (2, 1059);
 INSERT INTO `sys_role_menu` VALUES (2, 1060);
-
+INSERT INTO `sys_role_menu` VALUES (2, 2000);
+INSERT INTO `sys_role_menu` VALUES (2, 2001);
+INSERT INTO `sys_role_menu` VALUES (2, 2002);
+INSERT INTO `sys_role_menu` VALUES (2, 2003);
 -- ----------------------------
 -- Table structure for sys_user
 -- ----------------------------
