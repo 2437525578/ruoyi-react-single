@@ -14,11 +14,12 @@ const MessageTable: React.FC = () => {
 
   // 从location.state中获取selectedMessageId并设置筛选条件
   useEffect(() => {
-    if (location.state?.selectedMessageId) {
-      setSelectedMessageId(location.state.selectedMessageId);
+    if ((location.state as { selectedMessageId?: number })?.selectedMessageId) {
+      setSelectedMessageId((location.state as { selectedMessageId?: number }).selectedMessageId);
       // 如果表格已加载，执行筛选
       if (actionRef.current) {
-        actionRef.current.setFieldsValue({ id: location.state.selectedMessageId });
+        // 使用 reload 重新加载数据
+        actionRef.current?.reload();
       }
     }
   }, [location.state]);
@@ -75,8 +76,9 @@ const MessageTable: React.FC = () => {
       title: '操作',
       valueType: 'option',
       render: (_, record) => [
-        <a 
+        <Button 
           key="view-report" 
+          type="link"
           icon={<EyeOutlined />}
           onClick={() => {
             // 导航到报告页面并筛选当前消息的报告
@@ -84,7 +86,7 @@ const MessageTable: React.FC = () => {
           }}
         >
           查看报告
-        </a>
+        </Button>
       ],
     },
   ];
@@ -116,15 +118,17 @@ const MessageTable: React.FC = () => {
           </Button>,
         ]}
         request={async (params) => {
-      // 如果有selectedMessageId，添加到请求参数中
-      const requestParams = selectedMessageId ? { ...params, id: selectedMessageId } : params;
-      const msg = await getMessageList(requestParams);
-      return {
-        data: msg.rows,
-        success: true,
-        total: msg.total,
-      };
-    }}
+          // 如果有selectedMessageId，添加到请求参数中
+          const requestParams = selectedMessageId ? { ...params, id: selectedMessageId } : params;
+          const msg = await getMessageList(requestParams);
+          const rows = Array.isArray(msg) ? msg : (msg as any).rows || [];
+          const total = Array.isArray(msg) ? msg.length : (msg as any).total || 0;
+          return {
+            data: rows,
+            success: true,
+            total,
+          };
+        }}
         columns={columns}
       />
     </PageContainer>
