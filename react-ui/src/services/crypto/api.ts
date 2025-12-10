@@ -98,3 +98,11 @@ export async function removeReport(ids: string) {
     method: 'DELETE',
   });
 }
+
+// ================= 仪表盘数据 =================
+
+export async function getDashboardData() {
+  return request('/api/crypto/dashboard', {
+    method: 'GET',
+  });
+}
