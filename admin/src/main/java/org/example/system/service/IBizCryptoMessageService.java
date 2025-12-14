@@ -11,4 +11,5 @@ public interface IBizCryptoMessageService
     public int updateBizCryptoMessage(BizCryptoMessage bizCryptoMessage);
     public int deleteBizCryptoMessageByIds(Long[] ids);
     public int deleteBizCryptoMessageById(Long id);
+    void autoCollectNews();
 }

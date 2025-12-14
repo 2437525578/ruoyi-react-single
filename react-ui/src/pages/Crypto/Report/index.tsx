@@ -1,4 +1,5 @@
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
+import type { ProFormInstance } from '@ant-design/pro-components';
 import { PageContainer, ProTable } from '@ant-design/pro-components';
 import { message, Modal, Input, Tag, Button } from 'antd';
 import React, { useRef, useState, useEffect } from 'react';
@@ -6,7 +7,9 @@ import { getReportList, updateReport, generateReport } from '@/services/crypto/a
 import { useLocation, useNavigate } from '@umijs/max';
 import { EyeOutlined } from '@ant-design/icons';
 
+
 const ReportTable: React.FC = () => {
+  const formRef = useRef<ProFormInstance>();
   const actionRef = useRef<ActionType>();
   const [rejectModalOpen, setRejectModalOpen] = useState(false);
   const [currentId, setCurrentId] = useState<number>();
@@ -22,9 +25,10 @@ const ReportTable: React.FC = () => {
     if (location.state?.messageId) {
       setMessageId(location.state.messageId);
       // 如果表格已加载，执行筛选
-      if (actionRef.current) {
-        actionRef.current.setFieldsValue({ messageId: location.state.messageId });
-      }
+      if (formRef.current) {
+      formRef.current.setFieldsValue({ messageId: location.state.messageId });
+    }
+      actionRef.current?.reload(); // 重新加载数据
     }
   }, [location.state]);
 
@@ -131,6 +135,7 @@ const ReportTable: React.FC = () => {
     <PageContainer>
       <ProTable<API.BizInvestmentReport>
         headerTitle="AI 投资建议报告"
+        formRef={formRef}
         actionRef={actionRef}
         rowKey="id"
         search={{ labelWidth: 120 }}
