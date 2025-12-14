@@ -137,5 +137,5 @@ file:
 dify:
   api:
     # 替换为你自己在 Dify 平台创建的应用 Key (类型选 聊天助手)
-    key: app-m5Zu6W7LM6APE0vgpFOsIeXy
-    url: http://10.151.170.35:99/v1/chat-messages
+    key: 
+    url: 
