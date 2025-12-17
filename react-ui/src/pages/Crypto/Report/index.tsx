@@ -1,7 +1,7 @@
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import type { ProFormInstance } from '@ant-design/pro-components';
 import { PageContainer, ProTable } from '@ant-design/pro-components';
-import { message, Modal, Input, Tag, Button } from 'antd';
+import { message, Modal, Input, Button } from 'antd';
 import React, { useRef, useState, useEffect } from 'react';
 import { getReportList, updateReport, generateReport } from '@/services/crypto/api';
 import { useLocation, useNavigate } from '@umijs/max';
@@ -22,12 +22,13 @@ const ReportTable: React.FC = () => {
 
   // 从location.state中获取messageId并设置筛选条件
   useEffect(() => {
-    if (location.state?.messageId) {
-      setMessageId(location.state.messageId);
+    const state = location.state as { messageId?: number };
+    if (state?.messageId) {
+      setMessageId(state.messageId);
       // 如果表格已加载，执行筛选
       if (formRef.current) {
-      formRef.current.setFieldsValue({ messageId: location.state.messageId });
-    }
+        formRef.current.setFieldsValue({ messageId: state.messageId });
+      }
       actionRef.current?.reload(); // 重新加载数据
     }
   }, [location.state]);
@@ -152,10 +153,17 @@ const ReportTable: React.FC = () => {
           // 如果有messageId，添加到请求参数中
           const requestParams = messageId ? { ...params, messageId } : params;
           const msg = await getReportList(requestParams);
+          // 处理API响应，根据实际返回结构调整
+          const data = Array.isArray(msg) 
+            ? msg 
+            : Array.isArray((msg as any).rows) 
+              ? (msg as any).rows 
+              : [];
+          const total = typeof (msg as any).total === 'number' ? (msg as any).total : data.length;
           return {
-            data: msg.rows,
+            data,
             success: true,
-            total: msg.total,
+            total,
           };
         }}
         columns={columns}

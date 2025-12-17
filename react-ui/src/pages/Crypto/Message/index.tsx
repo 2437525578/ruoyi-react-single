@@ -1,10 +1,10 @@
+import { getMessageList, triggerCollectNews } from '@/services/crypto/api';
+import { EyeOutlined, ReloadOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { PageContainer, ProTable } from '@ant-design/pro-components';
-import { Tag, message, Button } from 'antd';
-import { EyeOutlined, ReloadOutlined } from '@ant-design/icons';
-import React, { useRef, useState, useEffect } from 'react';
-import { getMessageList, triggerCollectNews } from '@/services/crypto/api';
-import { useNavigate, useLocation } from '@umijs/max';
+import { useLocation, useNavigate } from '@umijs/max';
+import { Button, Tag, message } from 'antd';
+import React, { useEffect, useRef, useState } from 'react';
 
 const MessageTable: React.FC = () => {
   const actionRef = useRef<ActionType>();
@@ -14,12 +14,11 @@ const MessageTable: React.FC = () => {
 
   // 从location.state中获取selectedMessageId并设置筛选条件
   useEffect(() => {
-    if (location.state?.selectedMessageId) {
-      setSelectedMessageId(location.state.selectedMessageId);
-      // 如果表格已加载，执行筛选
-      if (actionRef.current) {
-        actionRef.current.setFieldsValue({ id: location.state.selectedMessageId });
-      }
+    const state = location.state as { selectedMessageId?: number };
+    if (state?.selectedMessageId) {
+      setSelectedMessageId(state.selectedMessageId);
+      // 重新加载数据以应用筛选
+      actionRef.current?.reload();
     }
   }, [location.state]);
 
@@ -33,14 +32,14 @@ const MessageTable: React.FC = () => {
         BTC: { text: 'BTC', status: 'Processing' },
         ETH: { text: 'ETH', status: 'Processing' },
         SOL: { text: 'SOL', status: 'Processing' },
-      }
+      },
     },
     {
       title: '消息内容',
       dataIndex: 'content',
       ellipsis: true,
       copyable: true,
-      width: '30%'
+      width: '30%',
     },
     {
       title: '情感倾向',
@@ -51,9 +50,14 @@ const MessageTable: React.FC = () => {
         NEUTRAL: { text: '中性', status: 'Default' },
       },
       render: (_, record) => {
-        const color = record.sentiment === 'POSITIVE' ? 'green' : record.sentiment === 'NEGATIVE' ? 'red' : 'default';
+        const color =
+          record.sentiment === 'POSITIVE'
+            ? 'green'
+            : record.sentiment === 'NEGATIVE'
+            ? 'red'
+            : 'default';
         return <Tag color={color}>{record.sentiment}</Tag>;
-      }
+      },
     },
     {
       title: '影响分数',
@@ -66,7 +70,7 @@ const MessageTable: React.FC = () => {
         else if (score < -0.6) color = 'green';
         else if (score < -0.3) color = 'cyan';
         return <Tag color={color}>{record.impactScore}</Tag>;
-      }
+      },
     },
     { title: '来源', dataIndex: 'source' },
     { title: '发布时间', dataIndex: 'publishTime', valueType: 'dateTime' },
@@ -75,16 +79,15 @@ const MessageTable: React.FC = () => {
       title: '操作',
       valueType: 'option',
       render: (_, record) => [
-        <a 
-          key="view-report" 
-          icon={<EyeOutlined />}
+        <a
+          key="view-report"
           onClick={() => {
             // 导航到报告页面并筛选当前消息的报告
             navigate('/crypto/report', { state: { messageId: record.id } });
           }}
         >
-          查看报告
-        </a>
+          <EyeOutlined /> 查看报告
+        </a>,
       ],
     },
   ];
@@ -116,15 +119,22 @@ const MessageTable: React.FC = () => {
           </Button>,
         ]}
         request={async (params) => {
-      // 如果有selectedMessageId，添加到请求参数中
-      const requestParams = selectedMessageId ? { ...params, id: selectedMessageId } : params;
-      const msg = await getMessageList(requestParams);
-      return {
-        data: msg.rows,
-        success: true,
-        total: msg.total,
-      };
-    }}
+          // 如果有selectedMessageId，添加到请求参数中
+          const requestParams = selectedMessageId ? { ...params, id: selectedMessageId } : params;
+          const msg = await getMessageList(requestParams);
+          // 处理API响应，根据实际返回结构调整
+          const data = Array.isArray(msg) 
+            ? msg 
+            : Array.isArray((msg as any).rows) 
+              ? (msg as any).rows 
+              : [];
+          const total = typeof (msg as any).total === 'number' ? (msg as any).total : data.length;
+          return {
+            data,
+            success: true,
+            total,
+          };
+        }}
         columns={columns}
       />
     </PageContainer>
