@@ -35,9 +35,8 @@ declare namespace API {
   };
 
   // 投资报告类型
-  type BizInvestmentReport = {
-    rows: BizInvestmentReport[] | undefined;
-    total: number | undefined;
+  // 单个投资报告项类型
+  type BizInvestmentReportItem = {
     id: number;
     messageId: number;
     analysisResult: string;
@@ -47,5 +46,11 @@ declare namespace API {
     auditTime: string;
     rejectReason: string;
     createTime: string;
+  };
+
+  // 投资报告列表类型（表格数据格式）
+  type BizInvestmentReport = {
+    rows: BizInvestmentReportItem[] | undefined;
+    total: number | undefined;
   };
 }

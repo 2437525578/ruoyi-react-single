@@ -137,5 +137,11 @@ file:
 dify:
   api:
     # 替换为你自己在 Dify 平台创建的应用 Key (类型选 聊天助手)
-    key: "app-xxxxxxxxxxxxxxxxxxxx"
-    url: "https://api.dify.ai/v1"
+    key: app-kRy50Lujx5MZhyhOCGj1IeGZ
+    btc-key: app-Upxr65TDhGYggIBHUVI70t4r  # 获取币的数据
+    url: https://api.dify.ai/v1/chat-messages
+
+
+
+
+

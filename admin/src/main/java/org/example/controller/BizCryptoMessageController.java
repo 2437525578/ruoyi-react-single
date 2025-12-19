@@ -1,78 +1,66 @@
 package org.example.controller;
 
 import java.util.List;
-import javax.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import org.example.system.log.annotation.Log;
-import org.example.system.log.enums.BusinessType;
-import org.example.system.security.annotation.RequiresPermissions;
 import org.example.system.domain.BizCryptoMessage;
 import org.example.system.service.IBizCryptoMessageService;
-import org.example.common.core.web.controller.BaseController;
-import org.example.common.core.web.domain.AjaxResult;
-import org.example.common.core.utils.poi.ExcelUtil;
-import org.example.common.core.web.page.TableDataInfo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 /**
- * 数字货币市场消息Controller
- * @author louis
- * @date 2025-12-02
+ * 虚拟货币行情消息Controller
  */
 @RestController
 @RequestMapping("/crypto/message")
-public class BizCryptoMessageController extends BaseController
-{
+public class BizCryptoMessageController {
+
     @Autowired
     private IBizCryptoMessageService bizCryptoMessageService;
 
-    @RequiresPermissions("crypto:message:list")
+    /**
+     * 获取虚拟货币行情消息列表
+     */
     @GetMapping("/list")
-    public TableDataInfo list(BizCryptoMessage bizCryptoMessage)
-    {
-        startPage();
-        List<BizCryptoMessage> list = bizCryptoMessageService.selectBizCryptoMessageList(bizCryptoMessage);
-        return getDataTable(list);
+    public List<BizCryptoMessage> list(BizCryptoMessage bizCryptoMessage) {
+        return bizCryptoMessageService.selectBizCryptoMessageList(bizCryptoMessage);
     }
 
-    @RequiresPermissions("crypto:message:export")
-    @Log(title = "数字货币市场消息", businessType = BusinessType.EXPORT)
-    @PostMapping("/export")
-    public void export(HttpServletResponse response, BizCryptoMessage bizCryptoMessage)
-    {
-        List<BizCryptoMessage> list = bizCryptoMessageService.selectBizCryptoMessageList(bizCryptoMessage);
-        ExcelUtil<BizCryptoMessage> util = new ExcelUtil<BizCryptoMessage>(BizCryptoMessage.class);
-        util.exportExcel(response, list, "数字货币市场消息数据");
+    /**
+     * 获取虚拟货币行情消息详情
+     */
+    @GetMapping("/info/{id}")
+    public BizCryptoMessage getInfo(@PathVariable("id") Long id) {
+        return bizCryptoMessageService.selectBizCryptoMessageById(id);
     }
 
-    @RequiresPermissions("crypto:message:query")
-    @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id)
-    {
-        return success(bizCryptoMessageService.selectBizCryptoMessageById(id));
+    /**
+     * 新增虚拟货币行情消息
+     */
+    @PostMapping("/add")
+    public int add(@RequestBody BizCryptoMessage bizCryptoMessage) {
+        return bizCryptoMessageService.insertBizCryptoMessage(bizCryptoMessage);
     }
 
-    @RequiresPermissions("crypto:message:add")
-    @Log(title = "数字货币市场消息", businessType = BusinessType.INSERT)
-    @PostMapping
-    public AjaxResult add(@RequestBody BizCryptoMessage bizCryptoMessage)
-    {
-        return toAjax(bizCryptoMessageService.insertBizCryptoMessage(bizCryptoMessage));
+    /**
+     * 修改虚拟货币行情消息
+     */
+    @PostMapping("/edit")
+    public int edit(@RequestBody BizCryptoMessage bizCryptoMessage) {
+        return bizCryptoMessageService.updateBizCryptoMessage(bizCryptoMessage);
     }
 
-    @RequiresPermissions("crypto:message:edit")
-    @Log(title = "数字货币市场消息", businessType = BusinessType.UPDATE)
-    @PutMapping
-    public AjaxResult edit(@RequestBody BizCryptoMessage bizCryptoMessage)
-    {
-        return toAjax(bizCryptoMessageService.updateBizCryptoMessage(bizCryptoMessage));
+    /**
+     * 删除虚拟货币行情消息
+     */
+    @DeleteMapping("/delete/{ids}")
+    public int delete(@PathVariable("ids") Long[] ids) {
+        return bizCryptoMessageService.deleteBizCryptoMessageByIds(ids);
     }
-
-    @RequiresPermissions("crypto:message:remove")
-    @Log(title = "数字货币市场消息", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
-    {
-        return toAjax(bizCryptoMessageService.deleteBizCryptoMessageByIds(ids));
+    
+    /**
+     * 手动触发AI收集新闻
+     */
+    @PostMapping("/collect")
+    public int collectCryptoMessages() {
+        return bizCryptoMessageService.collectCryptoMessages();
     }
 }

@@ -76,7 +76,7 @@ const ReportTable: React.FC = () => {
     }
   };
 
-  const columns: ProColumns<API.BizInvestmentReport>[] = [
+  const columns: ProColumns<API.BizInvestmentReportItem>[] = [
     { title: 'ID', dataIndex: 'id', width: 48, search: false },
     { 
       title: '关联消息ID', 
@@ -141,7 +141,7 @@ const ReportTable: React.FC = () => {
 
   return (
     <PageContainer>
-      <ProTable<API.BizInvestmentReport>
+      <ProTable<API.BizInvestmentReportItem>
         headerTitle="AI 投资建议报告"
         actionRef={actionRef}
         rowKey="id"
@@ -156,16 +156,66 @@ const ReportTable: React.FC = () => {
           </Button>,
         ]}
         request={async (params) => {
-          // 如果有messageId，添加到请求参数中
-          const requestParams = messageId ? { ...params, messageId } : params;
-          const msg = await getReportList(requestParams);
-          const rows = Array.isArray(msg) ? msg : (msg as any).rows || [];
-          const total = Array.isArray(msg) ? msg.length : (msg as any).total || 0;
-          return {
-            data: rows,
-            success: true,
-            total,
-          };
+          try {
+            // 如果有messageId，添加到请求参数中
+            const requestParams = messageId ? { ...params, messageId } : params;
+            // 直接获取后端返回的TableDataInfo格式数据
+            const response = await getReportList(requestParams);
+            
+            // 正确处理TableDataInfo格式
+            const rows = response.rows || [];
+            const total = response.total || 0;
+            
+            // 对返回的数据进行处理，确保adviceContent不是JSON格式
+            const processedRows = rows.map(row => {
+              if (row.adviceContent && typeof row.adviceContent === 'string') {
+                try {
+                  // 尝试解析JSON，如果成功则转换为自然语言描述
+                  const parsed = JSON.parse(row.adviceContent);
+                  // 如果是对象类型，转换为描述性文本
+                  if (typeof parsed === 'object' && parsed !== null) {
+                    // 构建自然语言描述
+                    let textAdvice = '';
+                    // 遍历加密货币建议
+                    for (const [cryptoType, details] of Object.entries(parsed)) {
+                      if (Array.isArray(details) && details.length > 0) {
+                        textAdvice += `关于${cryptoType}的分析：\n`;
+                        details.forEach(item => {
+                          if (item.title) textAdvice += `- ${item.title}\n`;
+                          if (item.summary) textAdvice += `  ${item.summary}\n`;
+                          if (item.influence_score) {
+                            const influence = item.influence_score > 0 ? '积极影响' : item.influence_score < 0 ? '消极影响' : '中性影响';
+                            textAdvice += `  影响程度：${influence} (${item.influence_score})\n`;
+                          }
+                          textAdvice += '\n';
+                        });
+                      }
+                    }
+                    // 如果成功生成了描述性文本，则替换原始JSON
+                    if (textAdvice) {
+                      row.adviceContent = textAdvice;
+                    }
+                  }
+                } catch (e) {
+                  // 如果不是有效的JSON，保留原始内容
+                }
+              }
+              return row;
+            });
+            
+            return {
+              data: processedRows,
+              success: true,
+              total,
+            };
+          } catch (error) {
+            console.error('获取报告列表失败:', error);
+            return {
+              data: [],
+              success: false,
+              total: 0,
+            };
+          }
         }}
         columns={columns}
         expandable={{
@@ -223,4 +273,7 @@ const ReportTable: React.FC = () => {
 };
 
 export default ReportTable;
+
+
+
 

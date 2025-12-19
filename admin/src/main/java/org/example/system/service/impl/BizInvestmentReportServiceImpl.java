@@ -99,8 +99,8 @@ public class BizInvestmentReportServiceImpl implements IBizInvestmentReportServi
                 "【角色】你是一位资深数字货币投资顾问。\n" +
                         "【背景】我收到一条新闻：%s (涉及币种:%s, 情感:%s)。\n" +
                         "【现状】我的当前持仓如下：%s。\n" +
-                        "【任务】请结合新闻和持仓，给出一份简短的调仓建议。如果是利好且持有量少，建议买入；如果是利空且持有量多，建议卖出。\n" +
-                        "【输出】直接给出建议内容，建议控制在 200 字以内。",
+                        "【任务】请结合新闻和持仓，给出一份详细的自然语言投资建议。请分析新闻对该币种的影响，考虑当前持仓情况，并给出具体的买卖建议。\n" +
+                        "【输出格式要求】请直接输出纯自然语言文本，不要返回任何JSON格式或代码格式。建议内容要专业、清晰、有条理，使用与用户提供的例子类似的表述方式。",
                 message.getContent(), message.getCoin(), message.getSentiment(), holdingsJson
         );
 

@@ -801,3 +801,31 @@ CREATE TABLE `test`  (
 -- ----------------------------
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+
+
+-- `ry-react`.biz_crypto_metrics definition
+
+CREATE TABLE `biz_crypto_metrics` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `symbol` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '币种符号，如 BTC, ETH, USDT（建议填充）',
+  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '币种中文名称，如 比特币',
+  `price_usd` decimal(20,8) NOT NULL COMMENT '当前价格（USD），支持高精度小数',
+  `market_cap` decimal(20,4) DEFAULT NULL COMMENT '市值（单位：亿美元），如比特币 17420 表示 1.742 万亿美元',
+  `hash_rate` decimal(10,2) DEFAULT NULL COMMENT '哈希率变化百分比（%），稳定币可能接近0',
+  `24h_change` decimal(10,2) DEFAULT NULL COMMENT '24小时涨跌幅（%）',
+  `transaction_count` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '流通量或交易量描述，如 "1944万 BTC"、"1863亿 USDT"',
+  `total_fees_btc` decimal(20,8) DEFAULT NULL COMMENT '总手续费（可能以BTC或对应币种计）',
+  `block_count` decimal(20,4) DEFAULT NULL COMMENT '区块相关指标（不同币种单位不同）',
+  `ath_price` decimal(20,8) DEFAULT NULL COMMENT '历史最高价（USD）',
+  `snapshot_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '数据爬取时间快照',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
+  `create_by` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT 'dify_crawler' COMMENT '创建者，默认爬虫名称',
+  `update_by` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT 'dify_crawler' COMMENT '最后更新者',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_symbol_snapshot` (`symbol`,`snapshot_time`),
+  KEY `idx_name` (`name`),
+  KEY `idx_snapshot_time` (`snapshot_time`),
+  KEY `idx_symbol` (`symbol`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='虚拟货币行情指标表（Dify爬取数据专用）';

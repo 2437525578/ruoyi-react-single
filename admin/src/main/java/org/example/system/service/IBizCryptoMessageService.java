@@ -11,4 +11,9 @@ public interface IBizCryptoMessageService
     public int updateBizCryptoMessage(BizCryptoMessage bizCryptoMessage);
     public int deleteBizCryptoMessageByIds(Long[] ids);
     public int deleteBizCryptoMessageById(Long id);
+    /**
+     * 采集数字货币市场消息
+     * @return 入库条数
+     */
+    int collectCryptoMessages();
 }

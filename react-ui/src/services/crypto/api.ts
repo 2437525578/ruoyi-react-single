@@ -106,3 +106,21 @@ export async function getDashboardData() {
     method: 'GET',
   });
 }
+
+
+// ================= 比特币链上数据 =================
+
+/** 获取行情列表 */
+export async function getMetricsList(params: any) {
+  return request('/api/crypto/metrics/list', {
+    method: 'GET',
+    params,
+  });
+}
+
+/** 手动触发行情采集 */
+export async function triggerCollectMetrics() {
+  return request('/api/crypto/metrics/collect', {
+    method: 'POST',
+  });
+}

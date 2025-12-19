@@ -1,6 +1,7 @@
 package org.example.controller;
 
 import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.example.system.log.annotation.Log;
 import org.example.system.log.enums.BusinessType;
-import org.example.system.security.annotation.RequiresPermissions;
+import org.example.security.annotation.RequiresPermissions;
 import org.example.system.domain.BizInvestmentReport;
 import org.example.system.service.IBizInvestmentReportService;
 import org.example.common.core.web.controller.BaseController;
@@ -75,5 +76,18 @@ public class BizInvestmentReportController extends BaseController
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(bizInvestmentReportService.deleteBizInvestmentReportByIds(ids));
+    }
+    
+    /**
+     * 手动生成投资报告
+     */
+    @RequiresPermissions("crypto:report:add")
+    @Log(title = "AI投资建议报告", businessType = BusinessType.INSERT)
+    @PostMapping("/generate")
+    public AjaxResult generate(@RequestBody Map<String, Long> requestData)
+    {
+        Long messageId = requestData.get("messageId");
+        bizInvestmentReportService.generateReport(messageId);
+        return success("投资建议报告生成成功");
     }
 }
