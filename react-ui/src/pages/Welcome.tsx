@@ -1,162 +1,148 @@
 import { PageContainer } from '@ant-design/pro-components';
-import { useModel } from '@umijs/max';
-import { Card, theme } from 'antd';
-import React from 'react';
+import { Card, theme, Statistic, Row, Col, message } from 'antd';
+import { ArrowUpOutlined, ArrowDownOutlined, DollarOutlined, FundOutlined } from '@ant-design/icons';
+import React, { useState, useEffect } from 'react';
+import { getHoldingsList } from '@/services/crypto/api';
 
-/**
- * 每个单独的卡片，为了复用样式抽成了组件
- * @param param0
- * @returns
- */
-const InfoCard: React.FC<{
-  title: string;
-  index: number;
-  desc: string;
-  href: string;
-}> = ({ title, href, index, desc }) => {
-  const { useToken } = theme;
-
-  const { token } = useToken();
-
-  return (
-    <div
-      style={{
-        backgroundColor: token.colorBgContainer,
-        boxShadow: token.boxShadow,
-        borderRadius: '8px',
-        fontSize: '14px',
-        color: token.colorTextSecondary,
-        lineHeight: '22px',
-        padding: '16px 19px',
-        minWidth: '220px',
-        flex: 1,
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          gap: '4px',
-          alignItems: 'center',
-        }}
-      >
-        <div
-          style={{
-            width: 48,
-            height: 48,
-            lineHeight: '22px',
-            backgroundSize: '100%',
-            textAlign: 'center',
-            padding: '8px 16px 16px 12px',
-            color: '#FFF',
-            fontWeight: 'bold',
-            backgroundImage:
-              "url('https://gw.alipayobjects.com/zos/bmw-prod/daaf8d50-8e6d-4251-905d-676a24ddfa12.svg')",
-          }}
-        >
-          {index}
-        </div>
-        <div
-          style={{
-            fontSize: '16px',
-            color: token.colorText,
-            paddingBottom: 8,
-          }}
-        >
-          {title}
-        </div>
-      </div>
-      <div
-        style={{
-          fontSize: '14px',
-          color: token.colorTextSecondary,
-          textAlign: 'justify',
-          lineHeight: '22px',
-          marginBottom: 8,
-        }}
-      >
-        {desc}
-      </div>
-      <a href={href} target="_blank" rel="noreferrer">
-        了解更多 {'>'}
-      </a>
-    </div>
-  );
-};
+// 系统概览数据类型
+interface OverviewData {
+  totalAssets: number;
+  totalHoldings: number;
+  totalValueChange: number;
+  usdtBalance: number;
+}
 
 const Welcome: React.FC = () => {
   const { token } = theme.useToken();
-  const { initialState } = useModel('@@initialState');
+  const [overviewData, setOverviewData] = useState<OverviewData>({
+    totalAssets: 0,
+    totalHoldings: 0,
+    totalValueChange: 0,
+    usdtBalance: 0,
+  });
+
+  // 从API获取持仓数据计算概览信息
+  useEffect(() => {
+    const fetchOverviewData = async () => {
+      try {
+        const response = await getHoldingsList();
+        // 处理API响应，根据实际返回结构调整
+        const holdings: API.BizAssetHoldings[] = Array.isArray(response) 
+          ? response 
+          : Array.isArray((response as any).rows) 
+            ? (response as any).rows 
+            : [];
+        
+        // 计算总资产
+        const totalAssets = holdings.reduce((sum: number, item: API.BizAssetHoldings) => sum + (item.usdtValue || 0), 0);
+        
+        // 计算持币种类
+        const totalHoldings = holdings.length;
+        
+        // 这里可以从其他API获取USDT余额和价值变动
+        // 暂时使用模拟数据，实际项目中应替换为真实API调用
+        const usdtBalance = 523456.78;
+        const totalValueChange = 2.5;
+        
+        setOverviewData({
+          totalAssets,
+          totalHoldings,
+          totalValueChange,
+          usdtBalance,
+        });
+      } catch (error) {
+        message.error('获取概览数据失败');
+        console.error('获取概览数据失败:', error);
+      }
+    };
+
+    fetchOverviewData();
+  }, []);
+
   return (
-    <PageContainer>
-      <Card
-        style={{
-          borderRadius: 8,
-        }}
-        bodyStyle={{
-          backgroundImage:
-            initialState?.settings?.navTheme === 'realDark'
-              ? 'background-image: linear-gradient(75deg, #1A1B1F 0%, #191C1F 100%)'
-              : 'background-image: linear-gradient(75deg, #FBFDFF 0%, #F5F7FF 100%)',
-        }}
-      >
-        <div
-          style={{
-            backgroundPosition: '100% -30%',
-            backgroundRepeat: 'no-repeat',
-            backgroundSize: '274px auto',
-            backgroundImage:
-              "url('https://gw.alipayobjects.com/mdn/rms_a9745b/afts/img/A*BuFmQqsB2iAAAAAAAAAAAAAAARQnAQ')",
-          }}
-        >
-          <div
-            style={{
-              fontSize: '20px',
-              color: token.colorTextHeading,
-            }}
-          >
-            欢迎使用 Ant Design Pro
-          </div>
-          <p
-            style={{
-              fontSize: '14px',
-              color: token.colorTextSecondary,
-              lineHeight: '22px',
-              marginTop: 16,
-              marginBottom: 32,
-              width: '65%',
-            }}
-          >
-            Ant Design Pro 是一个整合了 umi，Ant Design 和 ProComponents
-            的脚手架方案。致力于在设计规范和基础组件的基础上，继续向上构建，提炼出典型模板/业务组件/配套设计资源，进一步提升企业级中后台产品设计研发过程中的『用户』和『设计者』的体验。
-          </p>
-          <div
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: 16,
-            }}
-          >
-            <InfoCard
-              index={1}
-              href="https://umijs.org/docs/introduce/introduce"
-              title="了解 umi"
-              desc="umi 是一个可扩展的企业级前端应用框架,umi 以路由为基础的，同时支持配置式路由和约定式路由，保证路由的功能完备，并以此进行功能扩展。"
+    <PageContainer title="系统概览">
+      <Row gutter={[16, 16]}>
+        <Col xs={24} sm={12} lg={6}>
+          <Card>
+            <Statistic
+              title="总资产(USDT)"
+              value={overviewData.totalAssets}
+              precision={2}
+              prefix={<DollarOutlined />}
+              valueStyle={{ color: '#3f8600' }}
             />
-            <InfoCard
-              index={2}
-              title="了解 ant design"
-              href="https://ant.design"
-              desc="antd 是基于 Ant Design 设计体系的 React UI 组件库，主要用于研发企业级中后台产品。"
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card>
+            <Statistic
+              title="持币种类"
+              value={overviewData.totalHoldings}
+              prefix={<FundOutlined />}
             />
-            <InfoCard
-              index={3}
-              title="了解 Pro Components"
-              href="https://procomponents.ant.design"
-              desc="ProComponents 是一个基于 Ant Design 做了更高抽象的模板组件，以 一个组件就是一个页面为开发理念，为中后台开发带来更好的体验。"
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card>
+            <Statistic
+              title="总价值变动(24h)"
+              value={overviewData.totalValueChange}
+              precision={2}
+              suffix="%"
+              prefix={overviewData.totalValueChange > 0 ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
+              valueStyle={{ color: overviewData.totalValueChange > 0 ? '#cf1322' : '#3f8600' }}
             />
-          </div>
-        </div>
-      </Card>
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card>
+            <Statistic
+              title="USDT余额"
+              value={overviewData.usdtBalance}
+              precision={2}
+              prefix={<DollarOutlined />}
+            />
+          </Card>
+        </Col>
+      </Row>
+      <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
+        <Col xs={24} lg={12}>
+          <Card title="系统功能" bordered={false}>
+            <Row gutter={[16, 16]}>
+              <Col xs={12}>
+                <Card type="inner" title="持仓管理" size="small">
+                  <p>查看和管理企业持仓资产</p>
+                </Card>
+              </Col>
+              <Col xs={12}>
+                <Card type="inner" title="市场消息" size="small">
+                  <p>获取最新的数字货币市场消息</p>
+                </Card>
+              </Col>
+              <Col xs={12}>
+                <Card type="inner" title="投资建议" size="small">
+                  <p>查看AI生成的投资建议报告</p>
+                </Card>
+              </Col>
+              <Col xs={12}>
+                <Card type="inner" title="审核操作" size="small">
+                  <p>审批和执行交易操作</p>
+                </Card>
+              </Col>
+            </Row>
+          </Card>
+        </Col>
+        <Col xs={24} lg={12}>
+          <Card title="系统提示" bordered={false}>
+            <div style={{ lineHeight: '24px', color: token.colorTextSecondary }}>
+              <p>1. 请定期查看持仓数据，关注市场变化</p>
+              <p>2. 所有交易操作需要经过审核才能执行</p>
+              <p>3. 系统会定期生成投资建议报告</p>
+              <p>4. 请确保USDT余额充足以执行交易</p>
+            </div>
+          </Card>
+        </Col>
+      </Row>
     </PageContainer>
   );
 };

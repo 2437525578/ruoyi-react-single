@@ -154,10 +154,10 @@ export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => 
 export async function onRouteChange({clientRoutes, location}) {
   const menus = getRemoteMenu();
   // console.log('onRouteChange', clientRoutes, location, menus);
-  if (menus === null && location.pathname !== PageEnum.LOGIN) {
-    console.log('refresh')
-    history.go(0);
-  }
+  // if (menus === null && location.pathname !== PageEnum.LOGIN) {
+  //   console.log('refresh')
+  //   history.go(0);
+  // }
 }
 
 // export function patchRoutes({ routes, routeComponents }) {
@@ -181,6 +181,10 @@ export function render(oldRender: () => void) {
   getRoutersInfo().then(res => {
     setRemoteMenu(res);
     oldRender()
+  }).catch((err) => {
+    // 即使获取路由失败，也要继续渲染，否则页面会白屏
+    console.error("获取动态路由失败:", err);
+    oldRender();
   });
 }
 

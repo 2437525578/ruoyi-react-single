@@ -14,8 +14,22 @@ public class BizCryptoMessage extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
+    public Boolean getUseAiAnalysis() {
+        return useAiAnalysis;
+    }
+
+    public void setUseAiAnalysis(Boolean useAiAnalysis) {
+        this.useAiAnalysis = useAiAnalysis;
+    }
+
+    private Boolean useAiAnalysis = true;
+
     /** 主键ID */
     private Long id;
+
+
+
+
 
     /** 原始消息ID */
     @Excel(name = "原始消息ID")
@@ -70,6 +84,8 @@ public class BizCryptoMessage extends BaseEntity
     public void setPublishTime(Date publishTime) { this.publishTime = publishTime; }
     public Date getPublishTime() { return publishTime; }
 
+
+
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
@@ -85,4 +101,6 @@ public class BizCryptoMessage extends BaseEntity
                 .append("createTime", getCreateTime())
                 .toString();
     }
+
+
 }
