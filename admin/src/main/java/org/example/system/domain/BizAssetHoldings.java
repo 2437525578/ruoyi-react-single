@@ -32,6 +32,12 @@ public class BizAssetHoldings extends BaseEntity
     @Excel(name = "平均持仓成本")
     private BigDecimal costPrice;
 
+    /** 当前市场价格 (不对应数据库字段) */
+    private BigDecimal currentPrice;
+
+    /** 24h 涨跌幅 (不对应数据库字段) */
+    private BigDecimal change24h;
+
     public void setId(Long id) { this.id = id; }
     public Long getId() { return id; }
 
@@ -46,6 +52,12 @@ public class BizAssetHoldings extends BaseEntity
 
     public void setCostPrice(BigDecimal costPrice) { this.costPrice = costPrice; }
     public BigDecimal getCostPrice() { return costPrice; }
+
+    public void setCurrentPrice(BigDecimal currentPrice) { this.currentPrice = currentPrice; }
+    public BigDecimal getCurrentPrice() { return currentPrice; }
+
+    public void setChange24h(BigDecimal change24h) { this.change24h = change24h; }
+    public BigDecimal getChange24h() { return change24h; }
 
     @Override
     public String toString() {

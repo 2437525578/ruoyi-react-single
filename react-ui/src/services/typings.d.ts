@@ -45,6 +45,7 @@ declare namespace API {
     auditBy: string;
     auditTime: string;
     rejectReason: string;
+    executeJson: string;
     createTime: string;
   };
 

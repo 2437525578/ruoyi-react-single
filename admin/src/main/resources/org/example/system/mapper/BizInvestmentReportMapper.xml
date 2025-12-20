@@ -13,6 +13,7 @@
         <result property="auditBy"    column="audit_by"    />
         <result property="auditTime"    column="audit_time"    />
         <result property="rejectReason"    column="reject_reason"    />
+        <result property="executeJson"    column="execute_json"    />
         <result property="createBy"    column="create_by"    />
         <result property="createTime"    column="create_time"    />
         <result property="updateBy"    column="update_by"    />
@@ -20,7 +21,7 @@
     </resultMap>
 
     <sql id="selectBizInvestmentReportVo">
-        select id, message_id, analysis_result, advice_content, status, audit_by, audit_time, reject_reason, create_by, create_time, update_by, update_time from biz_investment_report
+        select id, message_id, analysis_result, advice_content, status, audit_by, audit_time, reject_reason, execute_json, create_by, create_time, update_by, update_time from biz_investment_report
     </sql>
 
     <select id="selectBizInvestmentReportList" parameterType="BizInvestmentReport" resultMap="BizInvestmentReportResult">
@@ -28,6 +29,7 @@
         <where>
             <if test="status != null  and status != ''"> and status = #{status}</if>
         </where>
+        order by create_time desc
     </select>
 
     <select id="selectBizInvestmentReportById" parameterType="Long" resultMap="BizInvestmentReportResult">
@@ -45,6 +47,7 @@
             <if test="auditBy != null">audit_by,</if>
             <if test="auditTime != null">audit_time,</if>
             <if test="rejectReason != null">reject_reason,</if>
+            <if test="executeJson != null">execute_json,</if>
             <if test="createBy != null">create_by,</if>
             <if test="createTime != null">create_time,</if>
             <if test="updateBy != null">update_by,</if>
@@ -58,6 +61,7 @@
             <if test="auditBy != null">#{auditBy},</if>
             <if test="auditTime != null">#{auditTime},</if>
             <if test="rejectReason != null">#{rejectReason},</if>
+            <if test="executeJson != null">#{executeJson},</if>
             <if test="createBy != null">#{createBy},</if>
             <if test="createTime != null">#{createTime},</if>
             <if test="updateBy != null">#{updateBy},</if>
@@ -75,6 +79,7 @@
             <if test="auditBy != null">audit_by = #{auditBy},</if>
             <if test="auditTime != null">audit_time = #{auditTime},</if>
             <if test="rejectReason != null">reject_reason = #{rejectReason},</if>
+            <if test="executeJson != null">execute_json = #{executeJson},</if>
             <if test="createBy != null">create_by = #{createBy},</if>
             <if test="createTime != null">create_time = #{createTime},</if>
             <if test="updateBy != null">update_by = #{updateBy},</if>

@@ -11,6 +11,11 @@ public interface IBizCryptoMetricsService
 
     List<BizCryptoMetrics> selectBizCryptoMetricsList(BizCryptoMetrics bizCryptoMetrics);
 
+    /**
+     * 查询每个币种最新的行情
+     */
+    List<BizCryptoMetrics> selectLatestMetrics();
+
     int insertBizCryptoMetrics(BizCryptoMetrics bizCryptoMetrics);
 
     int updateBizCryptoMetrics(BizCryptoMetrics bizCryptoMetrics);

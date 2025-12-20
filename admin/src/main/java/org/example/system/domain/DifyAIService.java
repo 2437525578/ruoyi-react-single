@@ -1,5 +1,7 @@
 package org.example.system.domain;
 
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -11,13 +13,13 @@ public class DifyAIService {
     @Value("${dify.api.url}")
     private String difyApiUrl;
 
-    @Value("${dify.api.key}")
-    private String apiKey;
+    @Value("${dify.api.report-key}")
+    private String reportApiKey;
 
     private final RestTemplate restTemplate = new RestTemplate();
 
     /**
-     * 调用 Dify 工作流，对输入文本进行分析
+     * 调用 Dify 助手，对输入文本进行分析
      * @param inputText 用户输入的消息内容
      * @return AI 分析结果（JSON 字符串）
      */
@@ -26,43 +28,37 @@ public class DifyAIService {
         if (inputText == null || inputText.trim().isEmpty()) {
             return "消息内容为空，无法进行 AI 分析";
         }
-        String url = difyApiUrl + "/api/v1/workflow/run";
+        
+        // 注意：聊天助手的接口地址是 /chat-messages
+        String url = difyApiUrl + "/chat-messages";
 
-        // 构造请求体（根据你的 Dify workflow 调整）
-        String requestBody = String.format(
-                "{\"inputs\":{\"text\":\"%s\"},\"response_mode\":\"blocking\",\"user\":\"system\"}",
-                inputText.replace("\"", "\\\"") // 转义引号
-        );
+        // 构造请求体
+        JSONObject body = new JSONObject();
+        JSONObject inputs = new JSONObject();
+        inputs.set("text", inputText);
+        
+        body.set("inputs", inputs);
+        body.set("query", "请根据提供的持仓和市场数据生成分析报告"); // 聊天助手必须有 query
+        body.set("response_mode", "blocking");
+        body.set("user", "system");
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + apiKey);
+        headers.set("Authorization", "Bearer " + reportApiKey);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
+        HttpEntity<String> entity = new HttpEntity<>(body.toString(), headers);
 
         try {
             ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
             if (response.getStatusCode().is2xxSuccessful()) {
-                return extractAnswer(response.getBody());
+                JSONObject resJson = JSONUtil.parseObj(response.getBody());
+                // 聊天助手的结果在 answer 字段中
+                return resJson.getStr("answer");
             } else {
                 return "AI 分析失败: " + response.getStatusCode();
             }
         } catch (Exception e) {
             return "AI 调用异常: " + e.getMessage();
         }
-    }
-
-    /**
-     * 从 Dify 返回的 JSON 中提取 answer 内容
-     * 示例响应结构：
-     * { "data": { "outputs": { "text": "分析结果..." } } }
-     */
-    private String extractAnswer(String responseBody) {
-        // 简单解析（生产环境建议用 Jackson）
-        int start = responseBody.indexOf("\"text\":\"");
-        if (start == -1) return "无法解析 AI 响应";
-        start += 8;
-        int end = responseBody.indexOf("\"", start);
-        return responseBody.substring(start, end).replace("\\n", "\n");
     }
 }

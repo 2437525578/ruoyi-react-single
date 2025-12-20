@@ -38,6 +38,12 @@ public class BizCryptoMetricsServiceImpl implements IBizCryptoMetricsService {
             case "USDC": return "USDC";
             case "索拉纳": return "SOL";
             case "狗狗币": return "DOGE";
+            case "艾达币": return "ADA";
+            case "波场": return "TRX";
+            case "吨币": return "TON";
+            case "波卡": return "DOT";
+            case "链节币": return "LINK";
+            case "柴犬币": return "SHIB";
             case "莱特币": return "LTC";
             default: return "UNKNOWN";
         }
@@ -51,6 +57,11 @@ public class BizCryptoMetricsServiceImpl implements IBizCryptoMetricsService {
     @Override
     public List<BizCryptoMetrics> selectBizCryptoMetricsList(BizCryptoMetrics bizCryptoMetrics) {
         return bizCryptoMetricsMapper.selectBizCryptoMetricsList(bizCryptoMetrics);
+    }
+
+    @Override
+    public List<BizCryptoMetrics> selectLatestMetrics() {
+        return bizCryptoMetricsMapper.selectLatestMetrics();
     }
 
     @Override
@@ -81,7 +92,7 @@ public class BizCryptoMetricsServiceImpl implements IBizCryptoMetricsService {
         return 1;
     }
 
-    @Scheduled(cron = "0 30 8 * * ?")
+    @Scheduled(cron = "0 0 * * * ?")
     @Transactional(rollbackFor = Exception.class)
     public void autoCollectMetrics() {
         System.out.println(">>> 开始执行 AI 行情采集任务...");
@@ -100,6 +111,8 @@ public class BizCryptoMetricsServiceImpl implements IBizCryptoMetricsService {
             }
 
             List<BizCryptoMetrics> metricsList = new ArrayList<>();
+            java.util.Set<String> processedSymbols = new java.util.HashSet<>();
+            Date now = new Date();
 
             for (Object obj : dataArray) {
                 JSONObject json = (JSONObject) obj;
@@ -108,23 +121,35 @@ public class BizCryptoMetricsServiceImpl implements IBizCryptoMetricsService {
 
                 String name = json.getStr("name");
                 if (name == null || name.isEmpty()) continue;
-                metrics.setName(name);
+                
+                String symbol = getSymbolByCoinName(name);
+                // 如果是未知币种，或者是重复的币种，则跳过，避免数据库唯一索引冲突
+                if ("UNKNOWN".equals(symbol) || processedSymbols.contains(symbol)) {
+                    continue;
+                }
 
                 // 当前价格
                 BigDecimal priceUsd = json.getBigDecimal("priceUsd");
                 if (priceUsd == null) priceUsd = json.getBigDecimal("price_usd");
-                if (priceUsd == null) continue;
-                metrics.setPriceUsd(priceUsd);
+                
+                // 如果价格为0或空，且不是稳定币，可能数据无效，跳过
+                if ((priceUsd == null || priceUsd.compareTo(BigDecimal.ZERO) <= 0) 
+                    && !name.contains("泰达") && !name.contains("USDC")) {
+                    continue;
+                }
+                
+                metrics.setName(name);
+                metrics.setPriceUsd(priceUsd != null ? priceUsd : BigDecimal.ZERO);
 
                 // 市值
                 BigDecimal marketCap = json.getBigDecimal("marketCap");
                 if (marketCap == null) marketCap = json.getBigDecimal("market_cap");
-                metrics.setMarketCap(marketCap);
+                metrics.setMarketCap(marketCap != null ? marketCap : BigDecimal.ZERO);
 
                 // 24h涨跌幅
                 BigDecimal change24h = json.getBigDecimal("change24h");
                 if (change24h == null) change24h = json.getBigDecimal("24h_change");
-                metrics.setChange24h(change24h);
+                metrics.setChange24h(change24h != null ? change24h : BigDecimal.ZERO);
 
                 // 流通量
                 String transactionCount = json.getStr("circulatingSupply");
@@ -136,47 +161,40 @@ public class BizCryptoMetricsServiceImpl implements IBizCryptoMetricsService {
                 // 历史最高价
                 BigDecimal athPrice = json.getBigDecimal("athPrice");
                 if (athPrice == null) athPrice = json.getBigDecimal("ath_price");
-                metrics.setAthPrice(athPrice);
+                metrics.setAthPrice(athPrice != null ? athPrice : BigDecimal.ZERO);
 
                 // 哈希率变化 - 兼容两种格式
                 BigDecimal hashRate = json.getBigDecimal("hashRate");
                 if (hashRate == null) hashRate = json.getBigDecimal("hash_rate");
-                metrics.setHashRate(hashRate);
+                metrics.setHashRate(hashRate != null ? hashRate : BigDecimal.ZERO);
 
                 // 总手续费 - 兼容两种格式
                 BigDecimal totalFeesBtc = json.getBigDecimal("totalFeesBtc");
                 if (totalFeesBtc == null) totalFeesBtc = json.getBigDecimal("total_fees_btc");
-                metrics.setTotalFeesBtc(totalFeesBtc);
+                metrics.setTotalFeesBtc(totalFeesBtc != null ? totalFeesBtc : BigDecimal.ZERO);
 
                 // 区块相关指标 - 兼容两种格式
                 BigDecimal blockCount = json.getBigDecimal("blockCount");
                 if (blockCount == null) blockCount = json.getBigDecimal("block_count");
-                metrics.setBlockCount(blockCount);
+                metrics.setBlockCount(blockCount != null ? blockCount : BigDecimal.ZERO);
 
-                metrics.setSymbol(getSymbolByCoinName(name));
-                metrics.setSnapshotTime(new Date());
-                metrics.setCreateTime(new Date());
-                metrics.setUpdateTime(new Date());
+                metrics.setSymbol(symbol);
+                metrics.setSnapshotTime(now);
+                metrics.setCreateTime(now);
+                metrics.setUpdateTime(now);
                 metrics.setCreateBy("dify_crawler");
                 metrics.setUpdateBy("dify_crawler");
 
                 metricsList.add(metrics);
-                System.out.println(">>>> 添加成功: " + name +
-                        " hashRate=" + hashRate +
-                        " totalFees=" + totalFeesBtc +
-                        " blockCount=" + blockCount);
+                processedSymbols.add(symbol);
             }
 
             if (metricsList.isEmpty()) {
-                System.err.println(">>> 无有效数据入库");
                 return;
             }
 
-            System.out.println(">>> 开始入库 " + metricsList.size() + " 条");
             bizCryptoMetricsMapper.deleteAll();
-            int rows = bizCryptoMetricsMapper.batchInsertBizCryptoMetrics(metricsList);
-            System.out.println(">>> 成功入库 " + rows + " 条记录");
-
+            bizCryptoMetricsMapper.batchInsertBizCryptoMetrics(metricsList);
         } catch (Exception e) {
             System.err.println(">>> 解析失败: " + aiResponse);
             e.printStackTrace();

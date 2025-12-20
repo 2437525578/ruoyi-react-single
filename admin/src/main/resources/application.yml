@@ -71,7 +71,7 @@ spring:
     # 地址
     host: localhost
     # 端口，默认为6379
-    port: 6379
+    port: 6380
     # 数据库索引
     database: 0
     # 密码
@@ -136,10 +136,13 @@ file:
 # Dify AI 配置
 dify:
   api:
-    # 替换为你自己在 Dify 平台创建的应用 Key (类型选 聊天助手)
-    key: app-kRy50Lujx5MZhyhOCGj1IeGZ
-    btc-key: app-Upxr65TDhGYggIBHUVI70t4r  # 获取币的数据
-    url: https://api.dify.ai/v1/chat-messages
+    url: http://10.151.170.35:99/v1
+    # 市场情报/新闻专用 (类型：聊天助手 或 工作流)
+    news-key: app-opVCqxaSk0bYszser40E00F1
+    # 市场行情/数据专用 (类型：聊天助手，您新写的提示词应放在这里)
+    metrics-key: app-1LRdqnyAPLl3oEieBGXJ7EaQ 
+    # 投资建议报告专用
+    report-key: app-ITlfpz2ZnvAcPh0dRXqoVpXL
 
 
 

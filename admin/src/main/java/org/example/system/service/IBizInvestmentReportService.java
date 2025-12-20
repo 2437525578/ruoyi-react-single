@@ -12,4 +12,9 @@ public interface IBizInvestmentReportService
     public int deleteBizInvestmentReportByIds(Long[] ids);
     public int deleteBizInvestmentReportById(Long id);
     public void generateReport(Long messageId);
+
+    /**
+     * 生成汇总投资建议报告（基于最新所有情报和行情）
+     */
+    public void generateSummaryReport();
 }

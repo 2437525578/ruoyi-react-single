@@ -29,6 +29,7 @@
             <if test="coin != null  and coin != ''"> and coin = #{coin}</if>
             <if test="sentiment != null  and sentiment != ''"> and sentiment = #{sentiment}</if>
         </where>
+        order by create_time desc
     </select>
 
     <select id="selectBizCryptoMessageById" parameterType="Long" resultMap="BizCryptoMessageResult">

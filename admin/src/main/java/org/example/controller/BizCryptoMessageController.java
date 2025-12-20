@@ -3,6 +3,7 @@ package org.example.controller;
 import java.util.List;
 import org.example.system.domain.BizCryptoMessage;
 import org.example.system.service.IBizCryptoMessageService;
+import org.example.system.security.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +20,7 @@ public class BizCryptoMessageController {
     /**
      * 获取虚拟货币行情消息列表
      */
+//    @RequiresPermissions("crypto:message:list")
     @GetMapping("/list")
     public List<BizCryptoMessage> list(BizCryptoMessage bizCryptoMessage) {
         return bizCryptoMessageService.selectBizCryptoMessageList(bizCryptoMessage);
@@ -27,6 +29,7 @@ public class BizCryptoMessageController {
     /**
      * 获取虚拟货币行情消息详情
      */
+//    @RequiresPermissions("crypto:message:query")
     @GetMapping("/info/{id}")
     public BizCryptoMessage getInfo(@PathVariable("id") Long id) {
         return bizCryptoMessageService.selectBizCryptoMessageById(id);
@@ -35,6 +38,7 @@ public class BizCryptoMessageController {
     /**
      * 新增虚拟货币行情消息
      */
+//    @RequiresPermissions("crypto:message:add")
     @PostMapping("/add")
     public int add(@RequestBody BizCryptoMessage bizCryptoMessage) {
         return bizCryptoMessageService.insertBizCryptoMessage(bizCryptoMessage);
@@ -43,6 +47,7 @@ public class BizCryptoMessageController {
     /**
      * 修改虚拟货币行情消息
      */
+//    @RequiresPermissions("crypto:message:edit")
     @PostMapping("/edit")
     public int edit(@RequestBody BizCryptoMessage bizCryptoMessage) {
         return bizCryptoMessageService.updateBizCryptoMessage(bizCryptoMessage);
@@ -51,6 +56,7 @@ public class BizCryptoMessageController {
     /**
      * 删除虚拟货币行情消息
      */
+//    @RequiresPermissions("crypto:message:remove")
     @DeleteMapping("/delete/{ids}")
     public int delete(@PathVariable("ids") Long[] ids) {
         return bizCryptoMessageService.deleteBizCryptoMessageByIds(ids);
@@ -59,6 +65,7 @@ public class BizCryptoMessageController {
     /**
      * 手动触发AI收集新闻
      */
+//    @RequiresPermissions("crypto:message:collect")
     @PostMapping("/collect")
     public int collectCryptoMessages() {
         return bizCryptoMessageService.collectCryptoMessages();

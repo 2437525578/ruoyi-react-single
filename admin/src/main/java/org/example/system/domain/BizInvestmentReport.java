@@ -46,6 +46,9 @@ public class BizInvestmentReport extends BaseEntity
     @Excel(name = "驳回原因")
     private String rejectReason;
 
+    /** 可执行的交易指令(JSON) */
+    private String executeJson;
+
     public void setId(Long id) { this.id = id; }
     public Long getId() { return id; }
 
@@ -69,6 +72,9 @@ public class BizInvestmentReport extends BaseEntity
 
     public void setRejectReason(String rejectReason) { this.rejectReason = rejectReason; }
     public String getRejectReason() { return rejectReason; }
+
+    public void setExecuteJson(String executeJson) { this.executeJson = executeJson; }
+    public String getExecuteJson() { return executeJson; }
 
     @Override
     public String toString() {

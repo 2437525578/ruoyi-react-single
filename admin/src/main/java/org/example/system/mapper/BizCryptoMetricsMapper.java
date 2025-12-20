@@ -36,6 +36,23 @@ public interface BizCryptoMetricsMapper {
     List<BizCryptoMetrics> selectBizCryptoMetricsList(BizCryptoMetrics bizCryptoMetrics);
 
     /**
+     * 查询每个币种最新的行情
+     */
+    @Select("SELECT t1.id, t1.symbol, t1.name, t1.price_usd AS priceUsd, t1.market_cap AS marketCap, " +
+            "t1.hash_rate AS hashRate, t1.`24h_change` AS change24h, t1.transaction_count AS transactionCount, " +
+            "t1.total_fees_btc AS totalFeesBtc, t1.block_count AS blockCount, t1.ath_price AS athPrice, " +
+            "t1.snapshot_time AS snapshotTime, t1.create_by AS createBy, t1.create_time AS createTime, " +
+            "t1.update_by AS updateBy, t1.update_time AS updateTime " +
+            "FROM biz_crypto_metrics t1 " +
+            "INNER JOIN (" +
+            "  SELECT symbol, MAX(snapshot_time) as max_time " +
+            "  FROM biz_crypto_metrics " +
+            "  GROUP BY symbol" +
+            ") t2 ON t1.symbol = t2.symbol AND t1.snapshot_time = t2.max_time " +
+            "ORDER BY t1.market_cap DESC")
+    List<BizCryptoMetrics> selectLatestMetrics();
+
+    /**
      * 插入数据
      */
     @Insert("INSERT INTO biz_crypto_metrics " +

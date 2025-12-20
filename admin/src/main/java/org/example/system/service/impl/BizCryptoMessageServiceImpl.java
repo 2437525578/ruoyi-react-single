@@ -10,6 +10,8 @@ import org.example.system.domain.BizCryptoMessage;
 import org.example.system.service.IBizCryptoMessageService;
 import org.example.system.service.IBizInvestmentReportService;
 import org.example.system.utils.DifyUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
@@ -18,6 +20,8 @@ import java.util.Random;
 @Service
 public class BizCryptoMessageServiceImpl implements IBizCryptoMessageService
 {
+    private static final Logger log = LoggerFactory.getLogger(BizCryptoMessageServiceImpl.class);
+
     @Autowired
     private BizCryptoMessageMapper bizCryptoMessageMapper;
     @Autowired
@@ -76,22 +80,24 @@ public class BizCryptoMessageServiceImpl implements IBizCryptoMessageService
      * 定时任务：每天早上 8 点自动采集
      * 对应任务书 3.1 消息采集模块
      */
-    @Scheduled(cron = "0 0 8 * * ?")
+    @Scheduled(cron = "0 10 * * * ?")
     // 开发测试时可以用 "0/30 * * * * ?" (每30秒执行一次)
     public void autoCollectNews() {
-        System.out.println(">>> 开始执行 AI 新闻采集任务...");
+        log.info(">>> 开始执行 AI 新闻采集任务...");
 
         // 1. 构建 Prompt (提示词)
-        String prompt = "请作为一位加密货币分析师，搜集当前最新的市场消息。" +
-                "请必须严格按照 JSON 对象格式返回，不要包含 Markdown 代码块标记。" +
-                "格式示例：{\"币种名称\":[{\"title\":\"标题\",\"summary\":\"摘要\",\"influence_score\":2}]}。";
+        String prompt = "请作为一位资深加密货币市场分析师，搜集当前全球市场最重要、最新的加密货币新闻和市场情报。" +
+                "请涵盖主流币种（如比特币、以太坊、币安币、索拉纳、瑞波币等）以及近期活跃的的热门币种（如狗狗币、波卡、链节币等）。" +
+                "请必须严格按照 JSON 对象格式返回，不要包含 Markdown 代码块标记，也不要返回任何额外文字。" +
+                "格式示例：{\"比特币\":[{\"title\":\"标题\",\"summary\":\"不超过100字的摘要\",\"influence_score\":2}],\"以太坊\":[{\"title\":\"标题\",\"summary\":\"摘要\",\"influence_score\":-2}]}。" +
+                "注意：influence_score 必须是 -2(重大利空), -1(利空), 0(中性), 1(利好), 2(重大利好) 中的一个。每个币种可包含多条新闻。";
 
         // 2. 调用 AI
         String aiResponse = difyUtils.sendRequest(prompt, "system_cron");
 
         // 3. 检查 AI 响应是否有效
         if (aiResponse == null || aiResponse.isEmpty()) {
-            System.err.println(">>> AI 服务请求失败，未返回有效数据");
+            log.error(">>> AI 服务请求失败，未返回有效数据");
             return;
         }
 
@@ -104,9 +110,9 @@ public class BizCryptoMessageServiceImpl implements IBizCryptoMessageService
         
         if (jsonStartIndex != -1 && jsonEndIndex != -1 && jsonEndIndex > jsonStartIndex) {
             aiResponse = aiResponse.substring(jsonStartIndex, jsonEndIndex + 1);
-            System.out.println(">>> 从 AI 响应中提取到 JSON 对象: " + aiResponse);
+            log.info(">>> 从 AI 响应中提取到 JSON 对象: {}", aiResponse);
         } else {
-            System.err.println(">>> AI 返回数据格式错误，未找到有效的 JSON 对象: " + aiResponse);
+            log.error(">>> AI 返回数据格式错误，未找到有效的 JSON 对象: {}", aiResponse);
             return;
         }
 
@@ -136,7 +142,7 @@ public class BizCryptoMessageServiceImpl implements IBizCryptoMessageService
                         score = newsJson.getInt("influence_score");
                     } catch (Exception e) {
                         // 处理可能的类型转换或字段不存在异常
-                        System.out.println("警告：无法获取有效influence_score，使用默认值");
+                        log.warn("警告：无法获取有效influence_score，使用默认值");
                     }
                     
                     // 设置情感倾向和影响分数，确保有合理的默认值
@@ -154,7 +160,7 @@ public class BizCryptoMessageServiceImpl implements IBizCryptoMessageService
                         impactScore = score.toString();
                     } else {
                         // 记录使用默认值的情况
-                        System.out.println("使用默认情感分析值：NEUTRAL, 0分");
+                        log.info("使用默认情感分析值：NEUTRAL, 0分");
                     }
                     
                     msg.setSentiment(sentiment);
@@ -179,17 +185,20 @@ public class BizCryptoMessageServiceImpl implements IBizCryptoMessageService
             for (BizCryptoMessage msg : newsList) {
                 if (this.insertBizCryptoMessage(msg) > 0) {
                     successCount++;
-                    if (msg.getId() != null) {
-                        System.out.println(">>> 正在为新闻 ID: " + msg.getId() + " 生成投资建议...");
-                        reportService.generateReport(msg.getId());
-                    }
                 }
             }
             
-            System.out.println(">>> 新闻采集完成，入库 " + successCount + " 条，共解析 " + newsList.size() + " 条");
+            log.info(">>> 新闻采集完成，入库 {} 条，共解析 {} 条", successCount, newsList.size());
+
+            // 5. 采集完成后，自动生成一份汇总投资建议报告
+            try {
+                log.info(">>> 正在自动生成汇总投资建议报告...");
+                reportService.generateSummaryReport();
+            } catch (Exception e) {
+                log.error(">>> 自动生成汇总报告失败", e);
+            }
         } catch (Exception e) {
-            System.err.println("解析 AI 返回数据失败，原始数据: " + aiResponse);
-            e.printStackTrace();
+            log.error("解析 AI 返回数据失败，原始数据: {}", aiResponse, e);
         }
     }
     

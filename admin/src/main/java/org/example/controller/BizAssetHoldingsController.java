@@ -28,7 +28,7 @@ public class BizAssetHoldingsController extends BaseController
     @Autowired
     private IBizAssetHoldingsService bizAssetHoldingsService;
 
-    @RequiresPermissions("crypto:holdings:list")
+//    @RequiresPermissions("crypto:holdings:list")
     @GetMapping("/list")
     public TableDataInfo list(BizAssetHoldings bizAssetHoldings)
     {
@@ -37,7 +37,7 @@ public class BizAssetHoldingsController extends BaseController
         return getDataTable(list);
     }
 
-    @RequiresPermissions("crypto:holdings:export")
+//    @RequiresPermissions("crypto:holdings:export")
     @Log(title = "企业持仓资产", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, BizAssetHoldings bizAssetHoldings)
@@ -47,14 +47,14 @@ public class BizAssetHoldingsController extends BaseController
         util.exportExcel(response, list, "企业持仓资产数据");
     }
 
-    @RequiresPermissions("crypto:holdings:query")
+//    @RequiresPermissions("crypto:holdings:query")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
         return success(bizAssetHoldingsService.selectBizAssetHoldingsById(id));
     }
 
-    @RequiresPermissions("crypto:holdings:add")
+//    @RequiresPermissions("crypto:holdings:add")
     @Log(title = "企业持仓资产", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody BizAssetHoldings bizAssetHoldings)
@@ -62,7 +62,7 @@ public class BizAssetHoldingsController extends BaseController
         return toAjax(bizAssetHoldingsService.insertBizAssetHoldings(bizAssetHoldings));
     }
 
-    @RequiresPermissions("crypto:holdings:edit")
+//    @RequiresPermissions("crypto:holdings:edit")
     @Log(title = "企业持仓资产", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody BizAssetHoldings bizAssetHoldings)
@@ -70,7 +70,7 @@ public class BizAssetHoldingsController extends BaseController
         return toAjax(bizAssetHoldingsService.updateBizAssetHoldings(bizAssetHoldings));
     }
 
-    @RequiresPermissions("crypto:holdings:remove")
+//    @RequiresPermissions("crypto:holdings:remove")
     @Log(title = "企业持仓资产", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

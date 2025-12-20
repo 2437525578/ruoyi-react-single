@@ -439,8 +439,27 @@ INSERT INTO `sys_menu` VALUES (1059, '预览代码', 116, 5, '#', '', '', 1, 0, 
 INSERT INTO `sys_menu` VALUES (1060, '生成代码', 116, 6, '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:code', '#', 'admin', '2024-04-12 22:06:26', '', NULL, '');
 INSERT INTO sys_menu (menu_id, menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark) VALUES (2000, '数字货币系统', 0, 1, 'crypto', 'Layout', 1, 0, 'M', '0', '0', '', 'fund', 'admin', NOW(), '', NULL, '数字货币一级目录');
 INSERT INTO sys_menu (menu_id, menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark) VALUES (2001, '持仓管理', 2000, 1, 'holdings', 'Crypto/Holdings/index', 1, 0, 'C', '0', '0', 'crypto:holdings:list', 'chart', 'admin', NOW(), '', NULL, '持仓管理页面');
+INSERT INTO sys_menu (menu_id, menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark) VALUES (2010, '持仓查询', 2001, 1, '#', '', 1, 0, 'F', '0', '0', 'crypto:holdings:query', '#', 'admin', NOW(), '', NULL, '');
+INSERT INTO sys_menu (menu_id, menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark) VALUES (2011, '持仓新增', 2001, 2, '#', '', 1, 0, 'F', '0', '0', 'crypto:holdings:add', '#', 'admin', NOW(), '', NULL, '');
+INSERT INTO sys_menu (menu_id, menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark) VALUES (2012, '持仓修改', 2001, 3, '#', '', 1, 0, 'F', '0', '0', 'crypto:holdings:edit', '#', 'admin', NOW(), '', NULL, '');
+INSERT INTO sys_menu (menu_id, menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark) VALUES (2013, '持仓删除', 2001, 4, '#', '', 1, 0, 'F', '0', '0', 'crypto:holdings:remove', '#', 'admin', NOW(), '', NULL, '');
+INSERT INTO sys_menu (menu_id, menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark) VALUES (2014, '持仓导出', 2001, 5, '#', '', 1, 0, 'F', '0', '0', 'crypto:holdings:export', '#', 'admin', NOW(), '', NULL, '');
 INSERT INTO sys_menu (menu_id, menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark) VALUES (2002, '市场消息', 2000, 2, 'message', 'Crypto/Message/index', 1, 0, 'C', '0', '0', 'crypto:message:list', 'message', 'admin', NOW(), '', NULL, '市场消息页面');
+INSERT INTO sys_menu (menu_id, menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark) VALUES (2020, '消息查询', 2002, 1, '#', '', 1, 0, 'F', '0', '0', 'crypto:message:query', '#', 'admin', NOW(), '', NULL, '');
+INSERT INTO sys_menu (menu_id, menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark) VALUES (2021, '消息新增', 2002, 2, '#', '', 1, 0, 'F', '0', '0', 'crypto:message:add', '#', 'admin', NOW(), '', NULL, '');
+INSERT INTO sys_menu (menu_id, menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark) VALUES (2022, '消息修改', 2002, 3, '#', '', 1, 0, 'F', '0', '0', 'crypto:message:edit', '#', 'admin', NOW(), '', NULL, '');
+INSERT INTO sys_menu (menu_id, menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark) VALUES (2023, '消息删除', 2002, 4, '#', '', 1, 0, 'F', '0', '0', 'crypto:message:remove', '#', 'admin', NOW(), '', NULL, '');
+INSERT INTO sys_menu (menu_id, menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark) VALUES (2024, '消息采集', 2002, 5, '#', '', 1, 0, 'F', '0', '0', 'crypto:message:collect', '#', 'admin', NOW(), '', NULL, '');
 INSERT INTO sys_menu (menu_id, menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark) VALUES (2003, '投资建议', 2000, 3, 'report', 'Crypto/Report/index', 1, 0, 'C', '0', '0', 'crypto:report:list', 'read', 'admin', NOW(), '', NULL, '投资建议审核页面');
+INSERT INTO sys_menu (menu_id, menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark) VALUES (2030, '报告查询', 2003, 1, '#', '', 1, 0, 'F', '0', '0', 'crypto:report:query', '#', 'admin', NOW(), '', NULL, '');
+INSERT INTO sys_menu (menu_id, menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark) VALUES (2031, '报告新增', 2003, 2, '#', '', 1, 0, 'F', '0', '0', 'crypto:report:add', '#', 'admin', NOW(), '', NULL, '');
+INSERT INTO sys_menu (menu_id, menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark) VALUES (2032, '报告修改', 2003, 3, '#', '', 1, 0, 'F', '0', '0', 'crypto:report:edit', '#', 'admin', NOW(), '', NULL, '');
+INSERT INTO sys_menu (menu_id, menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark) VALUES (2033, '报告删除', 2003, 4, '#', '', 1, 0, 'F', '0', '0', 'crypto:report:remove', '#', 'admin', NOW(), '', NULL, '');
+INSERT INTO sys_menu (menu_id, menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark) VALUES (2034, '报告导出', 2003, 5, '#', '', 1, 0, 'F', '0', '0', 'crypto:report:export', '#', 'admin', NOW(), '', NULL, '');
+INSERT INTO sys_menu (menu_id, menu_name, parent_id, order_num, `path`, component, query, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark)VALUES(2004, '虚拟货币行情', 2000, 4, 'metrics', 'Crypto/Metrics/index', NULL, 1, 0, 'C', '0', '0', 'crypto:metrics:list', 'metrics', 'admin', '2025-12-14 20:05:21', '', NULL, '');
+INSERT INTO sys_menu (menu_id, menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark) VALUES (2005, '行情查询', 2004, 1, '#', '', 1, 0, 'F', '0', '0', 'crypto:metrics:query', '#', 'admin', NOW(), '', NULL, '');
+INSERT INTO sys_menu (menu_id, menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark) VALUES (2006, '行情导出', 2004, 2, '#', '', 1, 0, 'F', '0', '0', 'crypto:metrics:export', '#', 'admin', NOW(), '', NULL, '');
+INSERT INTO sys_menu (menu_id, menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark) VALUES (2007, '行情采集', 2004, 3, '#', '', 1, 0, 'F', '0', '0', 'crypto:metrics:collect', '#', 'admin', NOW(), '', NULL, '');
 -- ----------------------------
 -- Table structure for sys_notice
 -- ----------------------------
@@ -670,6 +689,25 @@ INSERT INTO `sys_role_menu` VALUES (2, 2000);
 INSERT INTO `sys_role_menu` VALUES (2, 2001);
 INSERT INTO `sys_role_menu` VALUES (2, 2002);
 INSERT INTO `sys_role_menu` VALUES (2, 2003);
+INSERT INTO `sys_role_menu` VALUES (2, 2004);
+INSERT INTO `sys_role_menu` VALUES (2, 2005);
+INSERT INTO `sys_role_menu` VALUES (2, 2006);
+INSERT INTO `sys_role_menu` VALUES (2, 2007);
+INSERT INTO `sys_role_menu` VALUES (2, 2010);
+INSERT INTO `sys_role_menu` VALUES (2, 2011);
+INSERT INTO `sys_role_menu` VALUES (2, 2012);
+INSERT INTO `sys_role_menu` VALUES (2, 2013);
+INSERT INTO `sys_role_menu` VALUES (2, 2014);
+INSERT INTO `sys_role_menu` VALUES (2, 2020);
+INSERT INTO `sys_role_menu` VALUES (2, 2021);
+INSERT INTO `sys_role_menu` VALUES (2, 2022);
+INSERT INTO `sys_role_menu` VALUES (2, 2023);
+INSERT INTO `sys_role_menu` VALUES (2, 2024);
+INSERT INTO `sys_role_menu` VALUES (2, 2030);
+INSERT INTO `sys_role_menu` VALUES (2, 2031);
+INSERT INTO `sys_role_menu` VALUES (2, 2032);
+INSERT INTO `sys_role_menu` VALUES (2, 2033);
+INSERT INTO `sys_role_menu` VALUES (2, 2034);
 -- ----------------------------
 -- Table structure for sys_user
 -- ----------------------------
@@ -764,6 +802,7 @@ CREATE TABLE `biz_investment_report` (
                                          `audit_by` varchar(64) DEFAULT NULL COMMENT '审核人',
                                          `audit_time` datetime DEFAULT NULL COMMENT '审核时间',
                                          `reject_reason` varchar(255) DEFAULT NULL COMMENT '驳回原因',
+                                         `execute_json` text COMMENT '可执行的交易指令(JSON)',
                                          `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
                                          `create_time` datetime DEFAULT NULL COMMENT '创建时间',
                                          `update_by` varchar(64) DEFAULT '' COMMENT '更新者',

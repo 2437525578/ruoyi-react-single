@@ -14,6 +14,8 @@ declare namespace API {
     amount: number;
     usdtValue: number;
     costPrice: number;
+    currentPrice?: number;
+    change24h?: number;
     createTime: string;
     updateTime: string;
   };
@@ -40,6 +42,7 @@ declare namespace API {
     auditBy: string;
     auditTime: string;
     rejectReason: string;
+    executeJson: string;
     createTime: string;
   };
 }
