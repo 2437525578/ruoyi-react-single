@@ -1,0 +1,178 @@
+app:
+  description: ''
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  mode: advanced-chat
+  name: 投资建议助手
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/groq:0.0.12@38f75b2f4a3687af7b0947693c7903f5c7d8756f217ea492b8b81de6f16601f6
+    version: null
+kind: app
+version: 0.5.0
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        image_file_batch_limit: 10
+        image_file_size_limit: 10
+        single_chunk_attachment_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        sourceType: start
+        targetType: llm
+      id: 1766243928571-llm
+      source: '1766243928571'
+      sourceHandle: source
+      target: llm
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: llm
+        targetType: answer
+      id: llm-answer
+      source: llm
+      sourceHandle: source
+      target: answer
+      targetHandle: target
+      type: custom
+    nodes:
+    - data:
+        selected: false
+        title: 用户输入
+        type: start
+        variables: []
+      height: 72
+      id: '1766243928571'
+      position:
+        x: 80
+        y: 282
+      positionAbsolute:
+        x: 80
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        memory:
+          query_prompt_template: '{{#sys.query#}}
+
+
+            {{#sys.files#}}'
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 10
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: moonshotai/kimi-k2-instruct
+          provider: langgenius/groq/groq
+        prompt_template:
+        - id: a896f717-e81e-4ca9-b326-cce4d498d5eb
+          role: system
+          text: "### 角色设定\n你是一位资深的加密货币策略分析师，擅长结合市场实时情报、行情指标和用户持仓数据，提供专业、理性的投资操作建议。\n\
+            \n### 任务说明\n根据输入的内容{{#sys.query#}}（包含：市场新闻、当前币价、用户持仓），生成一份结构化的投资分析报告。\n\
+            \n### 分析维度\n1. **情报评估**：分析最新新闻对市场的潜在影响（利好/利空）。\n2. **风险预警**：根据价格波动和情报，识别持仓中的高风险币种。\n\
+            3. **操作策略**：给出具体的建议（买入/卖出/持有/调仓），并说明理由。\n\n### 输出格式要求\n你必须返回一个纯 JSON 对象，不要包含任何多余文字，结构如下：\n\
+            {\n  \"summary\": \"一句话概括市场当前态势\",\n  \"advice_content\": {\n    \"比特币\"\
+            : [\n      {\n        \"title\": \"分析标题\",\n        \"summary\": \"分析详情和操作建议\"\
+            ,\n        \"influence_score\": 1, // 影响分：利好(1,2), 中性(0), 利空(-1,-2)\n\
+            \        \"action\": \"BUY/SELL/HOLD/SWAP\" // 建议操作\n      }\n    ]\n\
+            \  },\n  \"risk_level\": \"低/中/高\",\n  \"strategy\": \"总体的资产配置建议\"\n}\n\
+            \n### 注意事项\n- 仅分析用户持仓中涉及的币种。\n- 理由必须基于提供的事实，严禁虚构数据。\n- 保持语言简练、专业。"
+        selected: true
+        structured_output_enabled: true
+        title: LLM
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: llm
+      position:
+        x: 380
+        y: 282
+      positionAbsolute:
+        x: 380
+        y: 282
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        answer: '{{#llm.text#}}'
+        selected: false
+        title: 直接回复
+        type: answer
+        variables: []
+      height: 102
+      id: answer
+      position:
+        x: 680
+        y: 282
+      positionAbsolute:
+        x: 680
+        y: 282
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    viewport:
+      x: 242.94630882368733
+      y: 171.7417238929936
+      zoom: 0.5743491774985177
+  rag_pipeline_variables: []

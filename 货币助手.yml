@@ -1,0 +1,270 @@
+app:
+  description: ''
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  mode: advanced-chat
+  name: 货币助手
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/groq:0.0.12@38f75b2f4a3687af7b0947693c7903f5c7d8756f217ea492b8b81de6f16601f6
+    version: null
+kind: app
+version: 0.5.0
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        image_file_batch_limit: 10
+        image_file_size_limit: 10
+        single_chunk_attachment_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: start
+        targetType: code
+      id: 1765783543994-source-1765857652864-target
+      selected: false
+      source: '1765783543994'
+      sourceHandle: source
+      target: '1765857652864'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: code
+        targetType: llm
+      id: 1765857652864-source-1766242662261-target
+      source: '1765857652864'
+      sourceHandle: source
+      target: '1766242662261'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: answer
+      id: 1766242662261-source-answer-target
+      source: '1766242662261'
+      sourceHandle: source
+      target: answer
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        selected: false
+        title: 用户输入
+        type: start
+        variables:
+        - hint: ''
+          label: 请输入要查询的币种
+          max_length: 100
+          options: []
+          placeholder: ''
+          required: true
+          type: text-input
+          variable: coin_name
+      height: 108
+      id: '1765783543994'
+      position:
+        x: -408.05061541897817
+        y: 330.319507910773
+      positionAbsolute:
+        x: -408.05061541897817
+        y: 330.319507910773
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        answer: '{{#1766242662261.text#}}'
+        selected: false
+        title: 直接回复
+        type: answer
+        variables: []
+      height: 102
+      id: answer
+      position:
+        x: 787.3564622517388
+        y: 314.971464878623
+      positionAbsolute:
+        x: 787.3564622517388
+        y: 314.971464878623
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        code: "import requests\nimport json\nfrom typing import Dict, Any\n\ndef main(arg1:\
+          \ str = \"全部\", **kwargs) -> Dict[str, Any]:\n    # 1. 定义映射\n    name_cn_map\
+          \ = {\n        \"bitcoin\": \"比特币\",\n        \"ethereum\": \"以太坊\",\n \
+          \       \"binancecoin\": \"币安币\",\n        \"dogecoin\": \"狗狗币\",\n    \
+          \    \"litecoin\": \"莱特币\",\n        \"ripple\": \"瑞波币\",\n        \"tether\"\
+          : \"泰达币\",\n        \"solana\": \"索拉纳\",\n        \"usd-coin\": \"USDC\"\
+          \n    }\n\n    all_coin_ids = \",\".join(name_cn_map.keys())\n    target_url\
+          \ = (\n        f\"https://api.coingecko.com/api/v3/coins/markets?\"\n  \
+          \      f\"vs_currency=usd&ids={all_coin_ids}&order=market_cap_desc\"\n \
+          \       f\"&per_page=100&page=1&sparkline=false&price_change_percentage=24h%2C7d\"\
+          \n    )\n\n    # 2. 增加 Header 防止拦截\n    headers = {\n        \"User-Agent\"\
+          : \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,\
+          \ like Gecko) Chrome/120.0.0.0 Safari/537.36\",\n        \"Accept\": \"\
+          application/json\"\n    }\n\n    try:\n        response = requests.get(target_url,\
+          \ headers=headers, timeout=10)\n        api_data = response.json() if response.status_code\
+          \ == 200 else []\n    except Exception as e:\n        print(f\"Error: {e}\"\
+          )\n        api_data = []\n\n    result_data = []\n    for item in api_data:\n\
+          \        coin_id = item.get(\"id\")\n        if coin_id not in name_cn_map:\n\
+          \            continue\n\n        supply = item.get(\"circulating_supply\"\
+          , 0)\n        symbol = item.get(\"symbol\", \"\").upper()\n        \n  \
+          \      if supply >= 100000000:\n            supply_str = f\"{int(supply\
+          \ / 100000000)}亿 {symbol}\"\n        elif supply >= 10000:\n           \
+          \ supply_str = f\"{int(supply / 10000)}万 {symbol}\"\n        else:\n   \
+          \         supply_str = f\"{int(supply)} {symbol}\"\n\n        result_data.append({\n\
+          \            \"name\": name_cn_map[coin_id],\n            \"price_usd\"\
+          : round(item.get(\"current_price\", 0) or 0, 2),\n            \"market_cap\"\
+          : int((item.get(\"market_cap\", 0) or 0) / 100000000),\n            \"hash_rate\"\
+          : round(item.get(\"price_change_percentage_7d_in_currency\", 0) or 0, 2),\n\
+          \            \"24h_change\": round(item.get(\"price_change_percentage_24h_in_currency\"\
+          , 0) or 0, 2),\n            \"transaction_count\": supply_str,\n       \
+          \     \"total_fees_btc\": round(item.get(\"high_24h\", 0) or 0, 2),\n  \
+          \          \"block_count\": round(item.get(\"low_24h\", 0) or 0, 2),\n \
+          \           \"create_by\": round(item.get(\"ath\", 0) or 0, 2)\n       \
+          \ })\n\n    text = json.dumps({\"data\": result_data}, ensure_ascii=False)\n\
+          \n    # 【关键修改】这里返回的 Key 必须对应你在节点右侧填写的“输出变量”\n    return {\n        \"data\"\
+          : {\"items\": result_data}, # 对应原来的 data 结构\n        \"name_cn_map\": name_cn_map,\
+          \     # 补充缺少的 name_cn_map\n        \"target_url\": target_url,       # 补充缺少的\
+          \ target_url\n        \"text\": text                    # 主要使用的文本\n    }"
+        code_language: python3
+        outputs:
+          data:
+            children: null
+            type: object
+          name_cn_map:
+            children: null
+            type: object
+          target_url:
+            children: null
+            type: string
+          text:
+            children: null
+            type: string
+        selected: false
+        title: 代码执行
+        type: code
+        variables:
+        - value_selector:
+          - '1765783543994'
+          - coin_name
+          value_type: string
+          variable: coin_name
+      height: 51
+      id: '1765857652864'
+      position:
+        x: -54.10244380330846
+        y: 447.2215830989961
+      positionAbsolute:
+        x: -54.10244380330846
+        y: 447.2215830989961
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: moonshotai/kimi-k2-instruct
+          provider: langgenius/groq/groq
+        prompt_template:
+        - id: bee77a26-9b7b-47ab-8586-c5a18fbfebc7
+          role: system
+          text: "### 任务说明 \n 1. **字段提取规则**：从提供的JSON数据中，为每个币种提取**以下9个指定字段**（严格9个，不增不减）：\
+            \ \n    - 币种中文名称（通过coin_id映射） \n    - 当前价格（price_usd）：保留2位小数 \n    - 市值（market_cap）：转换为“亿美元”单位，保留0位小数（如1742000000000美元→17420）\
+            \ \n    - 7天涨跌幅（hash_rate）：保留2位小数 \n    - 24h涨跌幅（24h_change）：保留2位小数 \n\
+            \    - 流通供应量（transaction_count）：添加币种符号（symbol），按数值大小简化单位（如19440000 BTC→1944万\
+            \ BTC） \n    - 24h最高价（total_fees_btc）：保留2位小数 \n    - 24h最低价（block_count）：保留2位小数\
+            \ \n    - 历史最高价（ath_price）：保留2位小数 \n 2. **币种范围**：处理以下15个主流币种，忽略其他币种： \n\
+            \    比特币、以太坊、币安币、索拉纳、泰达币、USDC、瑞波币、艾达币、狗狗币、波场、吨币、波卡、链节币、柴犬币、莱特币\n 3. **中文名称映射**：{{#1765857652864.text#}}\
+            \ \n 4. **输出要求**： \n    - 严格输出**JSON格式**，不添加任何额外文字（如标题、注释）； \n    - 最外层为对象，包含`\"\
+            data\"`键，值为上述15个币种的数组； \n    - 每个币种为对象，键名固定为：`\"name\"`（币种中文名称）、`\"price_usd\"\
+            `（当前价格）、`\"market_cap\"`（市值）、`\"hash_rate\"`（7天涨跌幅）、`\"24h_change\"`（24h涨跌幅）、`\"\
+            transaction_count\"`（流通供应量）、`\"total_fees_btc\"`（24h最高价）、`\"block_count\"\
+            `（24h最低价）、`\"ath_price\"`（历史最高价）。"
+        selected: true
+        structured_output_enabled: true
+        title: LLM
+        type: llm
+        vision:
+          enabled: false
+      height: 87
+      id: '1766242662261'
+      position:
+        x: 380.3028208942882
+        y: 368.58311656851134
+      positionAbsolute:
+        x: 380.3028208942882
+        y: 368.58311656851134
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    viewport:
+      x: 339.5733876189994
+      y: 109.30459015903511
+      zoom: 0.574349177498518
+  rag_pipeline_variables: []
